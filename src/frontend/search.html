@@ -13,15 +13,15 @@
     </div>
     <h3>Account</h3>
     <div id="account_table">
-        <p id="meter_id">Meter No:</p>
-        <p id="first_name">Name:</p>
-        <p id="last_name"></p>
-        <p id="barangay">Address:</p>
-        <p id="sitio"></p>
-        <p id="balance">Balance:</p>
+        <p>Meter No:</p>
+        <p>Name:</p>
+        <p></p>
+        <p>Address:</p>
+        <p></p>
+        <p>Balance:</p>
         <br>
-        <p id="payments">Payments</p>
-        <p id="bills">Bills</p>
+        <p>Payments</p>
+        <p>Bills</p>
     </div>
 
     <button id="pay">Pay</button>
@@ -30,19 +30,21 @@
         <h3>Payment</h3>
         <div>
             <label for="bill_id">
-                Bill No.: <input type="number" id="bill_id">
+                Bill No.: <select name="Bill id" id="bill_id">
+                    <option value="">Select a bill</option>
+                </select>
             </label>
             <br>
             <label for="meter_id">
-                Meter No.: <input type="number" id="meter_id">
+                Meter No.: <input type="number" id="payment_meter_id" readonly>
             </label>
             <br>
             <label for="payment_date">
-                Date: <input type="date" id="payment_date">
+                Date: <input type="date" id="payment_date" required>
             </label>
             <br>
             <label for="amount_paid">
-                Amount: <input type="number" id="amount_paid">
+                Amount: <input type="number" id="amount_paid" step="0.01" min="0.01" required>
             </label>
             <br>
             <input type="submit" id="submit">
