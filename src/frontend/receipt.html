@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/frontend/style/style.css">
+    <script src="/src/backend/receipt.js" defer></script>
+    <title>Print Receipt</title>
+</head>
+<body>
+    <div>
+        <input type="text" id="search_input" placeholder="Search payment number...">
+        <button id="search_button">Search</button>
+    </div>
+    <div id="print_receipt">
+        <h3>Magdiwang Water Supply System</h3>
+        <p>Magdiwang, Romblon</p>
+        <br>
+        <p>Receipt No: <p id="payment_id"></p></p>
+        <p>Customer: <p id="first_name"></p><p id="last_name"></p></p>
+        <p>Meter / Account No: <p id="meter_id"></p></p>
+        <p>Address: <p id="barangay"> <p id="sitio"></p></p></p>
+        <p>Payment Date: <p id="payment_date"></p></p>
+        <p>Amount paid: <p id="amount_paid"></p></p>
+    </div>
+    <button id="no_print" onclick="window.print()">Print</button>
+</body>
+</html>

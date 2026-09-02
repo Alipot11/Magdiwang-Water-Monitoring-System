@@ -1,0 +1,22 @@
+{
+  "name": "water_monitoring_system",
+  "version": "1.0.0",
+  "description": "Magdiwang Water Monitoring System",
+  "license": "ISC",
+  "author": "Aile Aron Mendezabal",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/src/backend/registration.js" defer></script>
+    <title>Register Client</title>
+</head>
+<body>
+    <form action="" method="post" id="registration_form">
+        <h3>Register</h3>
+        <div class="">
+             <label for="meter_id">
+                Meter Number: <input type="number" id="meter_id">
+            </label>
+            <br>
+            <label for="first_name">
+                First Name: <input type="text" id="first_name">
+            </label>
+            <br>
+            <label for="last_name">
+                Last Name: <input type="text" id="last_name">
+            </label>
+            <br>
+            <label for="barangay">
+                Barangay: <select name="barangay" id="barangay">
+                    <option value="agutay">agutay</option>
+                    <option value="agsao">agsao</option>
+                    <option value="ipil">ipil</option>
+                    <option value="ambulong">ambulong</option>
+                    <option value="poblacion">poblacion</option>
+                    <option value="jao-asan">jao-asan</option>
+                    <option value="dulangan">dulangan</option>
+                    <option value="tampayan">tampayan</option>
+                    <option value="silum">silum</option>
+                </select>
+            </label>
+            <br>
+            <label for="sitio">
+                Sitio: <input type="text" id="sitio">
+            </label>
+            <br>
+            <input type="submit" id="submit">
+        </div>
+    </form>
+</body>
+</html>

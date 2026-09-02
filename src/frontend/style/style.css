@@ -1,0 +1,25 @@
+#print_receipt {
+    width: 500px;
+    margin: 30px auto;
+    padding: 30px;
+    border: 5px solid #ccc
+}
+
+@media print {
+    #no_print {
+        display: none;
+    }
+    #search_input {
+        display: none;
+    }
+    #search_button {
+        display: none;
+    }
+
+    #receipt {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+    }
+}

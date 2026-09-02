@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/src/backend/bill.js" defer></script>
+    <title>Bill Posting</title>
+</head>
+<body>
+    <form action="" method="post" id="bill_form">
+        <h3>Bill</h3>
+        <label for="meter_id">
+            Meter No.: <input type="number" id="meter_id">
+        </label>
+        <br>
+        <label for="current reading">
+            Current Reading: <input type="number" id="curr_reading"> 
+        </label>
+        <br>
+        <label for="previous reading">
+            Previous Reading: <input type="number" id="pre_reading"> 
+        </label>
+        <br>
+        <label for="cubic meter">
+            Total Cubic Meter: <input type="number" id="tcmeter">
+        </label>
+        <br>
+        <label for="amount">
+            Amount: <input type="number" id="amount"> 
+        </label>
+        <br>
+        <label for="surcharge">
+            Surcharge: <input type="number" id="surcharge">
+        </label>
+        <br>
+        <label for="bill amount">
+            Bill Amount: <input type="number" id="bill_amount"> 
+        </label>
+        <br>
+        <label for="due date">
+            Due Date: <input type="date" id="duedate"> 
+        </label>
+        <br><br>
+        <input type="submit">
+    </form>
+</body>
+</html>

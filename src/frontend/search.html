@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/src/backend/search.js" defer></script>
+    <title>Search Account</title>
+</head>
+<body>
+    <div>
+        <input type="text" id="search_input" placeholder="Search meter number...">
+        <button id="search_button">Search</button>
+    </div>
+    <h3>Account</h3>
+    <div id="account_table">
+        <p id="meter_id">Meter No:</p>
+        <p id="first_name">Name:</p>
+        <p id="last_name"></p>
+        <p id="barangay">Address:</p>
+        <p id="sitio"></p>
+        <p id="balance">Balance:</p>
+        <br>
+        <p id="payments">Payments</p>
+        <p id="bills">Bills</p>
+    </div>
+
+    <button id="pay">Pay</button>
+
+    <form action="" method="post" id="payment_form">
+        <h3>Payment</h3>
+        <div>
+            <label for="bill_id">
+                Bill No.: <input type="number" id="bill_id">
+            </label>
+            <br>
+            <label for="meter_id">
+                Meter No.: <input type="number" id="meter_id">
+            </label>
+            <br>
+            <label for="payment_date">
+                Date: <input type="date" id="payment_date">
+            </label>
+            <br>
+            <label for="amount_paid">
+                Amount: <input type="number" id="amount_paid">
+            </label>
+            <br>
+            <input type="submit" id="submit">
+        </div>
+    </form>
+</body>
+</html>
