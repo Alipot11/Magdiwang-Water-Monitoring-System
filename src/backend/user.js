@@ -204,57 +204,57 @@ function displayBills(bills) {
             <div class="bill-details">
 
                 <div>
-                    <label>Previous Reading</label>
+                    <label>Previous Reading: </label>
                     <span>${bill.pre_reading}</span>
                 </div>
 
                 <div>
-                    <label>Current Reading</label>
+                    <label>Current Reading: </label>
                     <span>${bill.curr_reading}</span>
                 </div>
 
                 <div>
-                    <label>Consumption</label>
+                    <label>Consumption: </label>
                     <span>${bill.tcmeter}</span>
                 </div>
 
                 <div>
-                    <label>Amount</label>
+                    <label>Amount: </label>
                     <span>
                         ₱${amount.toFixed(2)}
                     </span>
                 </div>
 
                 <div>
-                    <label>Surcharge</label>
+                    <label>Surcharge: </label>
                     <span>
                         ₱${surcharge.toFixed(2)}
                     </span>
                 </div>
 
                 <div>
-                    <label>Total Bill</label>
+                    <label>Total Bill: </label>
                     <span>
                         ₱${billAmount.toFixed(2)}
                     </span>
                 </div>
 
                 <div>
-                    <label>Total Paid</label>
+                    <label>Total Paid: </label>
                     <span>
                         ₱${totalPaid.toFixed(2)}
                     </span>
                 </div>
 
                 <div>
-                    <label>Remaining Balance</label>
+                    <label>Remaining Balance: </label>
                     <span class="balance">
                         ₱${balance.toFixed(2)}
                     </span>
                 </div>
 
                 <div>
-                    <label>Due Date</label>
+                    <label>Due Date: </label>
                     <span>
                         ${formatDate(bill.duedate)}
                     </span>

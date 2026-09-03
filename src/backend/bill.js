@@ -31,10 +31,10 @@ bill_form.addEventListener('submit', async (event) => {
 
         bill_form.reset();
 
-        window.location.href = "view_client.html"
+        window.location.href = "search.html"
 
     }   catch (error) {
-        console.Error(error);
+        console.error(error);
         alert('Bill not posted')
     }
 });

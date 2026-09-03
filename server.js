@@ -9,32 +9,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// user login
-app.get('/api/login_account',(req,res)=>{
-    const search = req.query.q;
-
-    const sql = `
-    SELECT * FROM client_history
-    WHERE meter_id = ?`;
-
-    const search_value = `${search}`
-
-    db.query(
-        sql, 
-        [
-            search_value
-        ],     
-        (err, results)=>{
-        if (err) {
-            console.Error(err);
-            return res.status(500).json({
-                message: 'Failed to retrieve date'
-            })
-        }
-        res.json(results)
-    })
-})
-
 // get accounts from the database
 app.get('/api/view_account', (req, res) => {
     const sql = `
@@ -302,8 +276,41 @@ app.post('/api/register',(req,res) => {
 })
 
 // post bills to database
-app.post('/api/payments', (req, res) => {
+app.post('/api/bills',(req,res)=>{
+    const {
+        meter_id,
+        curr_reading,
+        pre_reading,
+        tcmeter,
+        amount,
+        surcharge,
+        bill_amount,
+        duedate
+    } = req.body
 
+    const sql =`
+    INSERT INTO bills
+    (meter_id, curr_reading, pre_reading, tcmeter, amount, surcharge, bill_amount, duedate)
+    VALUE(?,?,?,?,?,?,?,?)`;
+
+    db.query(
+        sql,
+        [meter_id, curr_reading, pre_reading, tcmeter, amount, surcharge, bill_amount, duedate],
+        (err)=>{
+            if (err) {
+                console.error(err);
+                return res.status(500);
+            }
+
+            res.status(200).json({
+                message: 'Bill posted'
+            });
+        }
+    );
+});
+
+// post payment to database
+app.post('/api/payments',(req, res) => {
     const {
         bill_id,
         meter_id,
