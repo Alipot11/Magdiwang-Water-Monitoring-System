@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="/src/backend/user.js" defer></script>
+
+    <title>My Water Account</title>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- SEARCH -->
+
+        <section class="search-box">
+
+            <h1>Account</h1>
+
+            <p>
+                Enter your meter number to view your account.
+            </p>
+
+            <form id="searchForm">
+
+                <input
+                    type="number"
+                    id="meterId"
+                    placeholder="Enter Meter ID"
+                    required
+                >
+
+                <button type="submit">
+                    Search
+                </button>
+
+            </form>
+
+            <p id="message"></p>
+
+        </section>
+
+
+        <!-- CLIENT INFORMATION -->
+
+        <section
+            id="clientSection"
+            class="card"
+            style="display: none;"
+        >
+
+            <h2>Account Information</h2>
+
+            <div class="client-info">
+
+                <div>
+                    <label>Meter ID:</label>
+                    <span id="clientMeter"></span>
+                </div>
+
+                <div>
+                    <label>Name:</label>
+                    <span id="clientName"></span>
+                </div>
+
+                <div>
+                    <label>Barangay:</label>
+                    <span id="clientBarangay"></span>
+                </div>
+
+                <div>
+                    <label>Sitio:</label>
+                    <span id="clientSitio"></span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BILLS -->
+
+        <section
+            id="billsSection"
+            class="card"
+            style="display: none;"
+        >
+
+            <h2>My Bills</h2>
+
+            <div id="billsContainer"></div>
+
+        </section>
+
+
+        <!-- PAYMENT HISTORY -->
+
+        <section
+            id="historySection"
+            class="card"
+            style="display: none;"
+        >
+
+            <h2>Payment History</h2>
+
+            <div id="historyContainer"></div>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

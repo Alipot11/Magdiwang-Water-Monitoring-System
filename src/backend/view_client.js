@@ -1,6 +1,6 @@
 async function loadClient() {
     try {
-        const response = await fetch('http://localhost:3000/api/view_account')
+        const response = await fetch('http://localhost:3000/api/view-account')
 
         if (!response.ok) {
             throw new Error('Failed to get account');

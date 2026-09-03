@@ -5,7 +5,7 @@ async function search_account() {
     const search = document.getElementById('search_input').value;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/view_account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
 
         const accounts = await response.json();
 
@@ -60,7 +60,7 @@ async function pay() {
 
     try {
         // Find account
-        const response = await fetch(`http://localhost:3000/api/view_account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
 
         const accounts = await response.json();
 
@@ -150,7 +150,7 @@ payment_form.addEventListener('submit', async(event) => {
 
     const data = {
         bill_id: Number(document.getElementById('bill_id').value),
-        meter_id: Number(document.getElementById('meter_id').value),
+        meter_id: Number(document.getElementById('payment_meter_id').value),
         payment_date: document.getElementById('payment_date').value,
         amount_paid: Number(document.getElementById('amount_paid').value)
     };
@@ -172,6 +172,8 @@ payment_form.addEventListener('submit', async(event) => {
         alert('Payment successful')
 
         payment_form.reset();
+
+        window.location.href = "search.html"
 
     }   catch (error) {
         console.error(error);
