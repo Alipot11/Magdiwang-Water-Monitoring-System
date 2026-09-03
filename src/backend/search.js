@@ -5,7 +5,7 @@ async function search_account() {
     const search = document.getElementById('search_input').value;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/view_account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
 
         const accounts = await response.json();
 
@@ -60,7 +60,7 @@ async function pay() {
 
     try {
         // Find account
-        const response = await fetch(`http://localhost:3000/api/view_account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
 
         const accounts = await response.json();
 
