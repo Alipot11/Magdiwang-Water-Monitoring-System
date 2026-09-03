@@ -79,6 +79,135 @@ app.get('/api/view_account/search', (req, res) => {
     )
 });
 
+// search account by the user
+app.get('/api/view-account/search/:meter_id', (req, res) => {
+
+    const meterId = req.params.meter_id;
+
+
+    // --------------------------------
+    // 1. FIND CLIENT
+    // --------------------------------
+
+    const clientSql = `
+        SELECT
+            meter_id,
+            first_name,
+            last_name,
+            barangay,
+            sitio
+        FROM customers
+        WHERE meter_id = ?
+    `;
+
+
+    db.query(clientSql, [meterId], (err, clients) => {
+
+        if (err) {
+            console.error('Client search error:', err);
+
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to find client'
+            });
+        }
+
+
+        // Client doesn't exist
+        if (clients.length === 0) {
+
+            return res.status(404).json({
+                success: false,
+                message: 'Client not found.'
+            });
+        }
+
+
+        const client = clients[0];
+
+
+        // --------------------------------
+        // 2. GET UNPAID BILLS
+        // --------------------------------
+
+        const unpaidBillsSql = `
+            SELECT *
+            FROM client_bills
+            WHERE meter_id = ?
+            ORDER BY duedate ASC, bill_id ASC
+        `;
+
+
+        db.query(
+            unpaidBillsSql,
+            [meterId],
+            (err, unpaidBills) => {
+
+                if (err) {
+                    console.error('Unpaid bills error:', err);
+
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to retrieve unpaid bills'
+                    });
+                }
+
+
+                // --------------------------------
+                // 3. GET PAYMENT HISTORY
+                // --------------------------------
+
+                const historySql = `
+                    SELECT *
+                    FROM client_payment_history
+                    WHERE meter_id = ?
+                    ORDER BY payment_date DESC, payment_id DESC
+                `;
+
+
+                db.query(
+                    historySql,
+                    [meterId],
+                    (err, paymentHistory) => {
+
+                        if (err) {
+                            console.error(
+                                'Payment history error:',
+                                err
+                            );
+
+                            return res.status(500).json({
+                                success: false,
+                                message:
+                                    'Failed to retrieve payment history'
+                            });
+                        }
+
+
+                        // --------------------------------
+                        // 4. SEND EVERYTHING TO CLIENT
+                        // --------------------------------
+
+                        res.json({
+                            success: true,
+
+                            client: client,
+
+                            unpaidBills: unpaidBills,
+
+                            paymentHistory: paymentHistory
+                        });
+
+                    }
+                );
+
+            }
+        );
+
+    });
+
+});
+
 // get bills from the database
 app.get('/api/bills/account/:meter_id',(req, res)=>{
     const meter_id = req.params.meter_id;
