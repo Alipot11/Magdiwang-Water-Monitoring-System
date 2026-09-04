@@ -72,7 +72,7 @@ router.post('/login', (req, res) => {
             });
         }
 
-        req.session.user.role = {
+        req.session.user = {
             user_id: user.user_id,
             username: user.username,
             full_name: user.full_name,
