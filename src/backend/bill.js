@@ -20,6 +20,7 @@ bill_form.addEventListener('submit', async (event) => {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         const result = await response.json();
