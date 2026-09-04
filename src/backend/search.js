@@ -5,7 +5,11 @@ async function search_account() {
     const search = document.getElementById('search_input').value;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+        {
+            credentials: 'include'
+        }
+    );
 
         const accounts = await response.json();
 
@@ -17,6 +21,7 @@ async function search_account() {
     }
 }
 
+// function for displaying account
 function display_account(accounts) {
     const table = document.getElementById('account_table');
 
@@ -47,7 +52,6 @@ function display_account(accounts) {
 // payment
 document.getElementById('pay').addEventListener('click', pay);
 
-
 async function pay() {
 
     const search =
@@ -60,7 +64,11 @@ async function pay() {
 
     try {
         // Find account
-        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+        {
+            credentials:'include'
+        }
+    );
 
         const accounts = await response.json();
 
@@ -75,7 +83,10 @@ async function pay() {
         document.getElementById('payment_meter_id').value = account.meter_id;
 
         // Get bills
-        const billResponse = await fetch(`http://localhost:3000/api/bills/account/${account.meter_id}`);
+        const billResponse = await fetch(`http://localhost:3000/api/bills/account/${account.meter_id}`,
+            {
+                credentials: 'include'
+            });
 
         const bills = await billResponse.json();
 
@@ -161,6 +172,7 @@ payment_form.addEventListener('submit', async(event) => {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         const result = await response.json();
