@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../../database.js');
 const {require_payment_access} = require('../middleware/auth.js')
 
+
 // post payment to database
 router.post('/',require_payment_access,(req, res) => {
     const {
@@ -57,7 +58,7 @@ router.post('/',require_payment_access,(req, res) => {
                 console.error(err);
 
                 return res.status(500).json({
-                    success: true,
+                    success: false,
                     message: 'Failed to verify bill'
                 });
             }
@@ -152,31 +153,64 @@ router.post('/',require_payment_access,(req, res) => {
         }
     );
 });
-// print payments
-router.get('/print', require_payment_access,(req,res) =>{
-    const search = req.query.q;
 
-    const sql = `
-    SELECT * FROM print_payments
-    WHERE payment_id = ?`;
 
-    const search_value = `${search}`
+// get payment records for printing
+router.get('/print', require_payment_access, (req, res) => {
 
-    db.query(
-        sql,
-        [
-            search_value
-        ],
-        (err, results)=>{
+    const { meter_id, payment_id } = req.query;
+
+    let sql = `
+        SELECT *
+        FROM print_payments
+    `;
+
+    let value;
+
+    if (payment_id) {
+
+        sql += `
+            WHERE payment_id = ?
+            ORDER BY payment_id DESC
+        `;
+
+        value = payment_id;
+
+    } else if (meter_id) {
+
+        sql += `
+            WHERE meter_id = ?
+            ORDER BY payment_date DESC, payment_id DESC
+        `;
+
+        value = meter_id;
+
+    } else {
+
+        return res.status(400).json({
+            success: false,
+            message: 'Meter ID or Payment ID is required'
+        });
+
+    }
+
+    db.query(sql, [value], (err, results) => {
+
         if (err) {
-            console.error(err);
+            console.error('Print payment error:', err);
+
             return res.status(500).json({
                 success: false,
-                message: 'Failed to retrive data'
+                message: 'Failed to retrieve payment records'
             });
         }
-        res.json(results);
+
+        res.json({
+            success: true,
+            payments: results
+        });
     });
 });
+
 
 module.exports = router

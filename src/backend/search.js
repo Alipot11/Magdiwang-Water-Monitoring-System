@@ -21,6 +21,7 @@ async function search_account() {
     }
 }
 
+
 // function for displaying account
 function display_account(accounts) {
     const table = document.getElementById('account_table');
@@ -49,6 +50,7 @@ function display_account(accounts) {
     });
 }
 
+
 // payment
 document.getElementById('pay').addEventListener('click', pay);
 
@@ -63,12 +65,14 @@ async function pay() {
     }
 
     try {
+
         // Find account
-        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
-        {
-            credentials:'include'
-        }
-    );
+        const response = await fetch(
+            `http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+            {
+                credentials: 'include'
+            }
+        );
 
         const accounts = await response.json();
 
@@ -80,21 +84,31 @@ async function pay() {
         const account = accounts[0];
 
         // Automatically fill meter number
-        document.getElementById('payment_meter_id').value = account.meter_id;
+        document.getElementById('payment_meter_id').value =
+            account.meter_id;
 
+
+        // ==========================================
         // Get bills
-        const billResponse = await fetch(`http://localhost:3000/api/bills/account/${account.meter_id}`,
+        // ==========================================
+
+        const billResponse = await fetch(
+            `http://localhost:3000/api/bills/account/${account.meter_id}`,
             {
                 credentials: 'include'
-            });
+            }
+        );
 
         const bills = await billResponse.json();
 
         if (!billResponse.ok) {
-            throw new Error(bills.message || 'Failed to load bills');
+            throw new Error(
+                bills.message || 'Failed to load bills'
+            );
         }
 
-        const billSelect = document.getElementById('bill_id');
+        const billSelect =
+            document.getElementById('bill_id');
 
         billSelect.innerHTML = `
             <option value="">
@@ -107,56 +121,132 @@ async function pay() {
 
             if (Number(bill.balance) > 0) {
 
-                const option = document.createElement('option');
+                const option =
+                    document.createElement('option');
 
                 option.value = bill.bill_id;
 
-                option.textContent = `Bill #${bill.bill_id} — ₱${Number(bill.balance).toFixed(2)} — Due ${bill.duedate.split('T')[0]}`;
+                option.textContent =
+                    `Bill #${bill.bill_id} — ₱${Number(bill.balance).toFixed(2)} — Due ${bill.duedate.split('T')[0]}`;
 
-                option.dataset.balance = bill.balance;
+                option.dataset.balance =
+                    bill.balance;
 
                 billSelect.appendChild(option);
             }
-
         });
 
+
+        // ==========================================
+        // Get payment history for receipt
+        // ==========================================
+
+        const paymentResponse = await fetch(
+            `http://localhost:3000/api/payments/print?meter_id=${account.meter_id}`,
+            {
+                credentials: 'include'
+            }
+        );
+
+        const paymentData =
+            await paymentResponse.json();
+
+        if (!paymentResponse.ok || !paymentData.success) {
+            throw new Error(
+                paymentData.message ||
+                'Failed to load payment history'
+            );
+        }
+
+
+        // ==========================================
+        // Populate payment select
+        // ==========================================
+
+        const paymentSelect =
+            document.getElementById('payment_select');
+
+        paymentSelect.innerHTML = `
+            <option value="">
+                Select a payment
+            </option>
+        `;
+
+        paymentData.payments.forEach(payment => {
+
+            const option =
+                document.createElement('option');
+
+            option.value =
+                payment.payment_id;
+
+            option.textContent =
+                `Payment #${payment.payment_id} — ₱${Number(payment.amount_paid).toFixed(2)} — ${payment.payment_date.split('T')[0]}`;
+
+            paymentSelect.appendChild(option);
+        });
+
+
+        // ==========================================
+        // Check for outstanding bills
+        // ==========================================
 
         if (billSelect.options.length === 1) {
 
             alert('This customer has no outstanding bills.');
-            return;
+
         }
 
-        document.getElementById('payment_form').scrollIntoView({behavior: 'smooth'});
+        // Scroll to payment section
+        document.getElementById('payment_form')
+            .scrollIntoView({
+                behavior: 'smooth'
+            });
+
 
     } catch (error) {
 
         console.error(error);
 
-        alert(error.message ||'Failed to load payment information.');
+        alert(
+            error.message ||
+            'Failed to load payment information.'
+        );
     }
 }
 
-// automatically fill bill options
+
+// Automatically fill payment amount when a bill is selected
 document.getElementById('bill_id').addEventListener('change', function () {
 
     const selectedOption = this.options[this.selectedIndex];
+    const amountInput = document.getElementById('amount_paid');
 
+    // If no bill is selected
     if (!selectedOption.value) {
-        document.getElementById('amount_paid').value = '';
+        amountInput.value = '';
         return;
     }
 
-    const balance = selectedOption.dataset.balance;
+    // Get the balance stored in the selected option
+    const balance = Number(selectedOption.dataset.balance);
 
-    document.getElementById('amount_paid').value =
-        Number(balance).toFixed(2);
+    if (isNaN(balance)) {
+        amountInput.value = '';
+        return;
+    }
+
+    // Automatically fill the amount
+    amountInput.value = balance.toFixed(2);
 });
 
-// submit payment
+
+
+// SUBMIT PAYMENT
 const payment_form = document.getElementById('payment_form');
 
-payment_form.addEventListener('submit', async(event) => {
+payment_form.addEventListener('submit', async (event) => {
+
     event.preventDefault();
 
     const data = {
@@ -167,29 +257,54 @@ payment_form.addEventListener('submit', async(event) => {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/payments', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
+
+        const response = await fetch(
+            'http://localhost:3000/api/payments',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(data)
+            }
+        );
+
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.message);
+            throw new Error(
+                result.message || 'Payment failed'
+            );
         }
 
-        alert('Payment successful')
+        alert('Payment successful');
 
         payment_form.reset();
 
-        window.location.href = "search.html"
+        window.location.href = 'search.html';
 
-    }   catch (error) {
+    } catch (error) {
+
         console.error(error);
-        alert('Payment not successful')
+
+        alert(
+            error.message ||
+            'Payment not successful'
+        );
     }
 });
 
+
+// GENERATE RECEIPT
+document.getElementById('generate_receipt').addEventListener('click', () => {
+
+    const paymentId = document.getElementById('payment_select').value;
+
+    if (!paymentId) {
+        alert('Please select a payment first.');
+        return;
+    }
+
+    window.location.href = `receipt.html?payment_id=${paymentId}`;
+});
