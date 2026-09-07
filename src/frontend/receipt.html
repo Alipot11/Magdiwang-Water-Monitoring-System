@@ -3,26 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet" href="/src/frontend/style/style.css">
     <script src="/src/backend/receipt.js" defer></script>
-    <title>Print Receipt</title>
+
+    <title>Payment Receipt</title>
 </head>
+
 <body>
-    <div>
-        <input type="text" id="search_input" placeholder="Search payment number...">
-        <button id="search_button">Search</button>
-    </div>
+
     <div id="print_receipt">
+
         <h3>Magdiwang Water Supply System</h3>
         <p>Magdiwang, Romblon</p>
-        <br>
-        <p>Receipt No: <p id="payment_id"></p></p>
-        <p>Customer: <p id="first_name"></p><p id="last_name"></p></p>
-        <p>Meter / Account No: <p id="meter_id"></p></p>
-        <p>Address: <p id="barangay"> <p id="sitio"></p></p></p>
-        <p>Payment Date: <p id="payment_date"></p></p>
-        <p>Amount paid: <p id="amount_paid"></p></p>
+
+        <hr>
+
+        <h4>Payment Information</h4>
+
+        <p>
+            Receipt No:
+            <span id="payment_id"></span>
+        </p>
+
+        <p>
+            Payment Date:
+            <span id="payment_date"></span>
+        </p>
+
+        <p>
+            Amount Paid:
+            ₱<span id="amount_paid"></span>
+        </p>
+
+        <hr>
+
+        <h4>Customer Information</h4>
+
+        <p>
+            Customer:
+            <span id="customer_name"></span>
+        </p>
+
+        <p>
+            Meter / Account No:
+            <span id="meter_id"></span>
+        </p>
+
+        <p>
+            Address:
+            <span id="address"></span>
+        </p>
+
+        <hr>
+
+        <h4>Bill Information</h4>
+
+        <p>
+            Bill No:
+            <span id="bill_id"></span>
+        </p>
+
+        <p>
+            Previous Reading:
+            <span id="pre_reading"></span>
+        </p>
+
+        <p>
+            Current Reading:
+            <span id="curr_reading"></span>
+        </p>
+
+        <p>
+            Total Consumption:
+            <span id="tcmeter"></span>
+        </p>
+
+        <p>
+            Water Charge:
+            ₱<span id="amount"></span>
+        </p>
+
+        <p>
+            Surcharge:
+            ₱<span id="surcharge"></span>
+        </p>
+
+        <p>
+            Bill Amount:
+            ₱<span id="bill_amount"></span>
+        </p>
+
+        <p>
+            Due Date:
+            <span id="duedate"></span>
+        </p>
+
+        <hr>
+
+        <p>Thank you for your payment.</p>
+
     </div>
-    <button id="no_print" onclick="window.print()">Print</button>
+
+    <button id="no_print" onclick="window.print()">
+        Print
+    </button>
+
 </body>
 </html>
