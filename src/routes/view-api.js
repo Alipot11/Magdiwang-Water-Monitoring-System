@@ -1,11 +1,11 @@
 const express = require ('express');
 const router = express.Router();
 const db = require('../../database.js');
-
+const {require_login} = require('../middleware/auth.js')
 
 
 // get accounts from the database
-router.get('/', (req, res) => {
+router.get('/',require_login,(req, res) => {
     const sql = `
     SELECT * FROM customers`;
 
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 });
 
 // search client account
-router.get('/search', (req, res) => {
+router.get('/search',require_login, (req, res) => {
     const search = req.query.q;
 
     const sql = `
@@ -48,7 +48,7 @@ router.get('/search', (req, res) => {
     )
 });
 
-// search account by the user
+// search account by the client
 router.get('/search/:meter_id', (req, res) => {
 
     const meterId = req.params.meter_id;

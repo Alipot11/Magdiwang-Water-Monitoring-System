@@ -1,10 +1,11 @@
 const express = require ('express');
 const router = express.Router();
 const db = require('../../database.js');
+const {require_admin, require_login} = require('../middleware/auth.js')
 
 
 // post bills to database
-router.post('/',(req,res)=>{
+router.post('/',require_admin,(req,res)=>{
     const {
         meter_id,
         curr_reading,
@@ -27,10 +28,13 @@ router.post('/',(req,res)=>{
         (err)=>{
             if (err) {
                 console.error(err);
-                return res.status(500);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to post bill'
+                });
             }
 
-            res.status(200).json({
+            res.status(201).json({
                 message: 'Bill posted'
             });
         }
@@ -38,7 +42,7 @@ router.post('/',(req,res)=>{
 });
 
 // get bills from the database
-router.get('/account/:meter_id',(req, res)=>{
+router.get('/account/:meter_id',require_login,(req, res)=>{
     const meter_id = req.params.meter_id;
 
     const sql = `

@@ -1,10 +1,10 @@
 const express = require ('express');
 const router = express.Router();
 const db = require('../../database.js');
-
+const {require_payment_access} = require('../middleware/auth.js')
 
 // post payment to database
-router.post('/',(req, res) => {
+router.post('/',require_payment_access,(req, res) => {
     const {
         bill_id,
         meter_id,
@@ -14,8 +14,9 @@ router.post('/',(req, res) => {
 
 
     // Basic validation
-    if (!bill_id || !meter_id || !payment_date || !amount_paid) {
+    if (!bill_id || !meter_id || !payment_date || amount_paid === undefined) {
         return res.status(400).json({
+            success: false,
             message: 'All payment fields are required'
         });
     }
@@ -56,6 +57,7 @@ router.post('/',(req, res) => {
                 console.error(err);
 
                 return res.status(500).json({
+                    success: true,
                     message: 'Failed to verify bill'
                 });
             }
@@ -65,6 +67,7 @@ router.post('/',(req, res) => {
             if (results.length === 0) {
 
                 return res.status(404).json({
+                    success: false,
                     message: 'Bill not found for this meter'
                 });
             }
@@ -92,6 +95,7 @@ router.post('/',(req, res) => {
             if (paymentAmount <= 0) {
 
                 return res.status(400).json({
+                    success: false,
                     message: 'Payment amount must be greater than zero'
                 });
             }
@@ -101,6 +105,7 @@ router.post('/',(req, res) => {
             if (paymentAmount > currentBalance) {
 
                 return res.status(400).json({
+                    success: false,
                     message:
                         `Payment exceeds remaining balance of ₱${currentBalance.toFixed(2)}`
                 });
@@ -130,12 +135,14 @@ router.post('/',(req, res) => {
                         console.error(err);
 
                         return res.status(500).json({
+                            success: false,
                             message: 'Payment failed'
                         });
                     }
 
 
                     res.status(201).json({
+                        success: true,
                         message: 'Payment successful'
                     });
 
@@ -146,7 +153,7 @@ router.post('/',(req, res) => {
     );
 });
 // print payments
-router.get('/print',(req,res) =>{
+router.get('/print', require_payment_access,(req,res) =>{
     const search = req.query.q;
 
     const sql = `
@@ -164,6 +171,7 @@ router.get('/print',(req,res) =>{
         if (err) {
             console.error(err);
             return res.status(500).json({
+                success: false,
                 message: 'Failed to retrive data'
             });
         }

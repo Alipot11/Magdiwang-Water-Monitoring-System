@@ -4,7 +4,11 @@ async function search_payment() {
     const search = document.getElementById('search_input').value;
 
     try {
-        const response = await fetch(`http://localhost:3000/api/payments/print?q=${encodeURIComponent(search)}`);
+        const response = await fetch(`http://localhost:3000/api/payments/print?q=${encodeURIComponent(search)}`,
+        {
+            credentials: 'include'
+        }
+    );
 
         const receipts = await response.json();
 
