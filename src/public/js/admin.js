@@ -19,7 +19,7 @@ document.getElementById('logout_btn').addEventListener('click', async () => {
         }
 
         // Return to the login page
-        window.location.href = 'login.html';
+        window.location.href = '../public/admin-login.html';
 
     } catch (error) {
 
