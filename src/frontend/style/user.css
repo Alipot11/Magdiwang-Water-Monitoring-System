@@ -21,7 +21,7 @@ body {
             rgba(0, 0, 0, 0.5),
             rgba(0, 0, 0, 0.5)
         ),
-        url('/assets/background.jpg') center / cover no-repeat fixed;
+        url('/assets/background.webp') center / cover no-repeat fixed;
 
     color: #F3F4F4;
     font-family: Arial, Helvetica, sans-serif;
