@@ -98,23 +98,18 @@ function displayClient(client) {
     document.getElementById('clientSection')
         .style.display = 'block';
 
-
     document.getElementById('clientMeter')
         .textContent = client.meter_id;
 
-
     document.getElementById('clientName')
         .textContent =
-        `${client.first_name} ${client.last_name}`;
-
+        `${client.first_name.toUpperCase()} ${client.last_name.toUpperCase()}`;
 
     document.getElementById('clientBarangay')
         .textContent = client.barangay || 'N/A';
 
-
     document.getElementById('clientSitio')
         .textContent = client.sitio || 'N/A';
-
 }
 
 
@@ -143,7 +138,7 @@ function displayBills(bills) {
     if (!bills || bills.length === 0) {
 
         container.innerHTML = `
-            <div class="no-bills">
+            <div class="bill-card">
 
                 <h3>✓ No Outstanding Bills</h3>
 
@@ -159,6 +154,16 @@ function displayBills(bills) {
 
 
     // ========================================
+    // BILL LIST
+    // ========================================
+
+    const billsList =
+        document.createElement('div');
+
+    billsList.className = 'bills-list';
+
+
+    // ========================================
     // DISPLAY EACH BILL
     // ========================================
 
@@ -169,6 +174,10 @@ function displayBills(bills) {
 
         billElement.className = 'bill-card';
 
+
+        // ========================================
+        // CALCULATE AMOUNTS
+        // ========================================
 
         const amount =
             Number(bill.amount || 0);
@@ -186,13 +195,26 @@ function displayBills(bills) {
             Number(bill.balance || 0);
 
 
+        // ========================================
+        // BILL HTML
+        // ========================================
+
         billElement.innerHTML = `
+
+            <!-- BILL HEADER -->
 
             <div class="bill-header">
 
-                <h3>
-                    Bill #${bill.bill_id}
-                </h3>
+                <div class="bill-number">
+
+                    <span>Bill</span>
+
+                    <h3>
+                        #${bill.bill_id}
+                    </h3>
+
+                </div>
+
 
                 <span class="status">
                     ${bill.status}
@@ -201,63 +223,126 @@ function displayBills(bills) {
             </div>
 
 
-            <div class="bill-details">
+            <!-- METER INFORMATION -->
 
-                <div>
-                    <label>Previous Reading: </label>
-                    <span>${bill.pre_reading}</span>
+            <div class="bill-section">
+
+                <h4>
+                    Meter Reading
+                </h4>
+
+
+                <div class="bill-details">
+
+                    <div>
+                        <label>
+                            Previous Reading:
+                        </label>
+
+                        <span>
+                            ${bill.pre_reading}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Current Reading:
+                        </label>
+
+                        <span>
+                            ${bill.curr_reading}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Consumption:
+                        </label>
+
+                        <span>
+                            ${bill.tcmeter}
+                        </span>
+                    </div>
+
                 </div>
 
-                <div>
-                    <label>Current Reading: </label>
-                    <span>${bill.curr_reading}</span>
-                </div>
+            </div>
 
-                <div>
-                    <label>Consumption: </label>
-                    <span>${bill.tcmeter}</span>
-                </div>
 
-                <div>
-                    <label>Amount: </label>
-                    <span>
-                        ₱${amount.toFixed(2)}
-                    </span>
-                </div>
+            <hr>
 
-                <div>
-                    <label>Surcharge: </label>
-                    <span>
-                        ₱${surcharge.toFixed(2)}
-                    </span>
-                </div>
 
-                <div>
-                    <label>Total Bill: </label>
-                    <span>
-                        ₱${billAmount.toFixed(2)}
-                    </span>
-                </div>
+            <!-- BILL SUMMARY -->
 
-                <div>
-                    <label>Total Paid: </label>
-                    <span>
-                        ₱${totalPaid.toFixed(2)}
-                    </span>
-                </div>
+            <div class="bill-section">
 
-                <div>
-                    <label>Remaining Balance: </label>
-                    <span class="balance">
-                        ₱${balance.toFixed(2)}
-                    </span>
-                </div>
+                <h4>
+                    Bill Summary
+                </h4>
 
-                <div>
-                    <label>Due Date: </label>
-                    <span>
-                        ${formatDate(bill.duedate)}
-                    </span>
+
+                <div class="bill-details">
+
+                    <div>
+                        <label>
+                            Amount:
+                        </label>
+
+                        <span>
+                            ₱${amount.toFixed(2)}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Surcharge:
+                        </label>
+
+                        <span>
+                            ₱${surcharge.toFixed(2)}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Total Bill:
+                        </label>
+
+                        <span>
+                            ₱${billAmount.toFixed(2)}
+                        </span>
+                    </div>
+
+
+                    <div class="balance-row">
+
+                        <label>
+                            Balance:
+                        </label>
+
+                        <span class="balance">
+                            ₱${balance.toFixed(2)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="due-date">
+
+                        <label>
+                            Due Date:
+                        </label>
+
+                        <span>
+                            ${formatDate(bill.duedate)}
+                        </span>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -265,12 +350,18 @@ function displayBills(bills) {
         `;
 
 
-        container.appendChild(billElement);
+        billsList.appendChild(billElement);
 
     });
 
-}
 
+    // ========================================
+    // ADD TO PAGE
+    // ========================================
+
+    container.appendChild(billsList);
+
+}
 
 // ========================================
 // DISPLAY PAYMENT HISTORY
@@ -311,40 +402,13 @@ function displayPaymentHistory(history) {
 
 
     // ========================================
-    // CREATE TABLE
+    // CREATE PAYMENT HISTORY CONTAINER
     // ========================================
 
-    const table =
-        document.createElement('table');
+    const paymentHistory =
+        document.createElement('div');
 
-    table.className = 'payment-table';
-
-
-    table.innerHTML = `
-
-        <thead>
-
-            <tr>
-
-                <th>Bill #</th>
-
-                <th>Bill Amount</th>
-
-                <th>Amount Paid</th>
-
-                <th>Payment Date</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody></tbody>
-
-    `;
-
-
-    const tbody =
-        table.querySelector('tbody');
+    paymentHistory.className = 'payment-history';
 
 
     // ========================================
@@ -353,10 +417,6 @@ function displayPaymentHistory(history) {
 
     history.forEach(payment => {
 
-        const row =
-            document.createElement('tr');
-
-
         const billAmount =
             Number(payment.bill_amount || 0);
 
@@ -364,33 +424,70 @@ function displayPaymentHistory(history) {
             Number(payment.amount_paid || 0);
 
 
-        row.innerHTML = `
+        const paymentCard =
+            document.createElement('div');
 
-            <td>
+        paymentCard.className = 'payment';
+
+
+        paymentCard.innerHTML = `
+
+            <div>
+                <span class="payment-label">
+                    Bill #
+                </span>
+
+                <strong>
                 #${payment.bill_id}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Bill Amount
+                </span>
+
+                <strong>
                 ₱${billAmount.toFixed(2)}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Amount Paid
+                </span>
+
+                <strong>
                 ₱${amountPaid.toFixed(2)}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Payment Date
+                </span>
+
+                <strong>
                 ${formatDate(payment.payment_date)}
-            </td>
+                </strong>
+            </div>
 
         `;
 
 
-        tbody.appendChild(row);
+        paymentHistory.appendChild(paymentCard);
 
     });
 
 
-    container.appendChild(table);
+    // ========================================
+    // ADD TO PAGE
+    // ========================================
+
+    container.appendChild(paymentHistory);
 
 }
 
