@@ -98,23 +98,18 @@ function displayClient(client) {
     document.getElementById('clientSection')
         .style.display = 'block';
 
-
     document.getElementById('clientMeter')
         .textContent = client.meter_id;
-
 
     document.getElementById('clientName')
         .textContent =
         `${client.first_name.toUpperCase()} ${client.last_name.toUpperCase()}`;
 
-
     document.getElementById('clientBarangay')
         .textContent = client.barangay || 'N/A';
 
-
     document.getElementById('clientSitio')
         .textContent = client.sitio || 'N/A';
-
 }
 
 
@@ -143,7 +138,7 @@ function displayBills(bills) {
     if (!bills || bills.length === 0) {
 
         container.innerHTML = `
-            <div class="no-bills">
+            <div class="bill-card">
 
                 <h3>✓ No Outstanding Bills</h3>
 
@@ -321,7 +316,7 @@ function displayBills(bills) {
                             ₱${billAmount.toFixed(2)}
                         </span>
                     </div>
-                    
+
 
                     <div class="balance-row">
 
