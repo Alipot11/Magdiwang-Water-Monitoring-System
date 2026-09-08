@@ -159,6 +159,16 @@ function displayBills(bills) {
 
 
     // ========================================
+    // BILL LIST
+    // ========================================
+
+    const billsList =
+        document.createElement('div');
+
+    billsList.className = 'bills-list';
+
+
+    // ========================================
     // DISPLAY EACH BILL
     // ========================================
 
@@ -169,6 +179,10 @@ function displayBills(bills) {
 
         billElement.className = 'bill-card';
 
+
+        // ========================================
+        // CALCULATE AMOUNTS
+        // ========================================
 
         const amount =
             Number(bill.amount || 0);
@@ -186,13 +200,26 @@ function displayBills(bills) {
             Number(bill.balance || 0);
 
 
+        // ========================================
+        // BILL HTML
+        // ========================================
+
         billElement.innerHTML = `
+
+            <!-- BILL HEADER -->
 
             <div class="bill-header">
 
-                <h3>
-                    Bill #${bill.bill_id}
-                </h3>
+                <div class="bill-number">
+
+                    <span>Bill</span>
+
+                    <h3>
+                        #${bill.bill_id}
+                    </h3>
+
+                </div>
+
 
                 <span class="status">
                     ${bill.status}
@@ -201,67 +228,126 @@ function displayBills(bills) {
             </div>
 
 
-            <div class="bill-details">
+            <!-- METER INFORMATION -->
 
-                <div>
-                    <label>Previous Reading: </label>
-                    <span>${bill.pre_reading}</span>
+            <div class="bill-section">
+
+                <h4>
+                    Meter Reading
+                </h4>
+
+
+                <div class="bill-details">
+
+                    <div>
+                        <label>
+                            Previous Reading:
+                        </label>
+
+                        <span>
+                            ${bill.pre_reading}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Current Reading:
+                        </label>
+
+                        <span>
+                            ${bill.curr_reading}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Consumption:
+                        </label>
+
+                        <span>
+                            ${bill.tcmeter}
+                        </span>
+                    </div>
+
                 </div>
 
-                <div>
-                    <label>Current Reading: </label>
-                    <span>${bill.curr_reading}</span>
-                </div>
+            </div>
 
-                <div>
-                    <label>Consumption: </label>
-                    <span>${bill.tcmeter}</span>
-                </div>
 
-                <div>
-                    <label>Amount: </label>
-                    <span>
-                        ₱${amount.toFixed(2)}
-                    </span>
-                </div>
+            <hr>
 
-                <div>
-                    <label>Surcharge: </label>
-                    <span>
-                        ₱${surcharge.toFixed(2)}
-                    </span>
-                </div>
 
-                <div>
-                    <label>Total Bill: </label>
-                    <span>
-                        ₱${billAmount.toFixed(2)}
-                    </span>
-                </div>
+            <!-- BILL SUMMARY -->
 
-                <div>
-                    <label>Total Paid: </label>
-                    <span>
-                        ₱${totalPaid.toFixed(2)}
-                    </span>
-                </div>
+            <div class="bill-section">
 
-                <div>
-                    <label>Balance: </label>
-                    <span class="balance">
-                        ₱${balance.toFixed(2)}
-                    </span>
-                </div>
+                <h4>
+                    Bill Summary
+                </h4>
 
-                <div>
-                    <label>Due Date: </label>
-                    <span>
-                        ${formatDate(bill.duedate)}
-                    </span>
-                </div>
-                
-                <div>
-                    <hr>
+
+                <div class="bill-details">
+
+                    <div>
+                        <label>
+                            Amount:
+                        </label>
+
+                        <span>
+                            ₱${amount.toFixed(2)}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Surcharge:
+                        </label>
+
+                        <span>
+                            ₱${surcharge.toFixed(2)}
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <label>
+                            Total Bill:
+                        </label>
+
+                        <span>
+                            ₱${billAmount.toFixed(2)}
+                        </span>
+                    </div>
+                    
+
+                    <div class="balance-row">
+
+                        <label>
+                            Balance:
+                        </label>
+
+                        <span class="balance">
+                            ₱${balance.toFixed(2)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="due-date">
+
+                        <label>
+                            Due Date:
+                        </label>
+
+                        <span>
+                            ${formatDate(bill.duedate)}
+                        </span>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -269,12 +355,18 @@ function displayBills(bills) {
         `;
 
 
-        container.appendChild(billElement);
+        billsList.appendChild(billElement);
 
     });
 
-}
 
+    // ========================================
+    // ADD TO PAGE
+    // ========================================
+
+    container.appendChild(billsList);
+
+}
 
 // ========================================
 // DISPLAY PAYMENT HISTORY
