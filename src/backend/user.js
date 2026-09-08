@@ -105,7 +105,7 @@ function displayClient(client) {
 
     document.getElementById('clientName')
         .textContent =
-        `${client.first_name} ${client.last_name}`;
+        `${client.first_name.toUpperCase()} ${client.last_name.toUpperCase()}`;
 
 
     document.getElementById('clientBarangay')
@@ -247,7 +247,7 @@ function displayBills(bills) {
                 </div>
 
                 <div>
-                    <label>Remaining Balance: </label>
+                    <label>Balance: </label>
                     <span class="balance">
                         ₱${balance.toFixed(2)}
                     </span>
@@ -258,6 +258,10 @@ function displayBills(bills) {
                     <span>
                         ${formatDate(bill.duedate)}
                     </span>
+                </div>
+                
+                <div>
+                    <hr>
                 </div>
 
             </div>
@@ -311,40 +315,13 @@ function displayPaymentHistory(history) {
 
 
     // ========================================
-    // CREATE TABLE
+    // CREATE PAYMENT HISTORY CONTAINER
     // ========================================
 
-    const table =
-        document.createElement('table');
+    const paymentHistory =
+        document.createElement('div');
 
-    table.className = 'payment-table';
-
-
-    table.innerHTML = `
-
-        <thead>
-
-            <tr>
-
-                <th>Bill #</th>
-
-                <th>Bill Amount</th>
-
-                <th>Amount Paid</th>
-
-                <th>Payment Date</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody></tbody>
-
-    `;
-
-
-    const tbody =
-        table.querySelector('tbody');
+    paymentHistory.className = 'payment-history';
 
 
     // ========================================
@@ -353,10 +330,6 @@ function displayPaymentHistory(history) {
 
     history.forEach(payment => {
 
-        const row =
-            document.createElement('tr');
-
-
         const billAmount =
             Number(payment.bill_amount || 0);
 
@@ -364,33 +337,70 @@ function displayPaymentHistory(history) {
             Number(payment.amount_paid || 0);
 
 
-        row.innerHTML = `
+        const paymentCard =
+            document.createElement('div');
 
-            <td>
+        paymentCard.className = 'payment';
+
+
+        paymentCard.innerHTML = `
+
+            <div>
+                <span class="payment-label">
+                    Bill #
+                </span>
+
+                <strong>
                 #${payment.bill_id}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Bill Amount
+                </span>
+
+                <strong>
                 ₱${billAmount.toFixed(2)}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Amount Paid
+                </span>
+
+                <strong>
                 ₱${amountPaid.toFixed(2)}
-            </td>
+                </strong>
+            </div>
 
-            <td>
+
+            <div>
+                <span class="payment-label">
+                    Payment Date
+                </span>
+
+                <strong>
                 ${formatDate(payment.payment_date)}
-            </td>
+                </strong>
+            </div>
 
         `;
 
 
-        tbody.appendChild(row);
+        paymentHistory.appendChild(paymentCard);
 
     });
 
 
-    container.appendChild(table);
+    // ========================================
+    // ADD TO PAGE
+    // ========================================
+
+    container.appendChild(paymentHistory);
 
 }
 
