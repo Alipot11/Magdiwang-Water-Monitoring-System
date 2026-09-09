@@ -13,12 +13,13 @@ const admin_login = require('./src/routes/admin-api.js')
 
 
 app.use(session({
-    secret: 'CHANGE_THIS_TO_A_VERY_LONG_SECRET',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 8
     }
 }));

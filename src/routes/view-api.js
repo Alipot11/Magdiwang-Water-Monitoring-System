@@ -1,57 +1,120 @@
-const express = require ('express');
+const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const db = require('../../database.js');
-const {require_login} = require('../middleware/auth.js')
+const { require_staff } = require('../middleware/auth.js');
 
 
-// get accounts from the database
-router.get('/',require_login,(req, res) => {
+const publicAccountLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 30,                  // maximum 30 lookups
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many account lookups. Please try again later.'
+    }
+});
+
+
+// Staff: get accounts
+router.get('/', require_staff, (req, res) => {
+
     const sql = `
-    SELECT * FROM customers`;
+        SELECT
+            meter_id,
+            first_name,
+            last_name,
+            barangay,
+            sitio
+        FROM customers
+    `;
 
     db.query(sql, (err, results) => {
+
         if (err) {
-            console.error(err);
+            console.error('Retrieve accounts error:', err);
+
             return res.status(500).json({
+                success: false,
                 message: 'Failed to retrieve data'
             });
         }
-        res.json(results);
+
+        res.json({
+            success: true,
+            accounts: results
+        });
     });
 });
 
-// search client account
-router.get('/search',require_login, (req, res) => {
-    const search = req.query.q;
+
+// Staff: search account
+router.get('/search', require_staff, (req, res) => {
+
+    const search = req.query.q?.trim();
+
+    if (!search) {
+        return res.status(400).json({
+            success: false,
+            message: 'Search value is required'
+        });
+    }
 
     const sql = `
-    SELECT * FROM client_history
-    WHERE meter_id = ?`;
+        SELECT *
+        FROM client_history
+        WHERE meter_id = ?
+    `;
 
-    db.query (
-        sql,
-        [
-            search
-        ],
-        (err, results) => {
-            if (err) {
-                console.error(err)
+    db.query(sql, [search], (err, results) => {
 
-                return res.status(500).json({
-                    message: `Search failed`
-                });
-            }
+        if (err) {
+            console.error('Search account error:', err);
 
-            res.json(results);
+            return res.status(500).json({
+                success: false,
+                message: 'Search failed'
+            });
         }
 
-    )
+        res.json({
+            success: true,
+            accounts: results
+        });
+    });
 });
 
-// search account by the client
-router.get('/search/:meter_id', (req, res) => {
+// Public resident account lookup (read-only)
+router.get('/search/account/:meter_id',publicAccountLimiter, (req, res) => {
+
+    // Do not cache personal account information
+    res.set('Cache-Control', 'no-store');
 
     const meterId = req.params.meter_id;
+
+    // Meter IDs are integers in the database.
+    // Reject malformed values before querying the database.
+    if (!/^\d+$/.test(meterId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid meter number'
+        });
+    }
+
+    const meterNumber = Number(meterId);
+
+    // MySQL INT range + reject zero/negative values
+    if (
+        !Number.isSafeInteger(meterNumber) ||
+        meterNumber <= 0 ||
+        meterNumber > 2147483647
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid meter number'
+        });
+    }
 
 
     // --------------------------------
@@ -67,30 +130,26 @@ router.get('/search/:meter_id', (req, res) => {
             sitio
         FROM customers
         WHERE meter_id = ?
+        LIMIT 1
     `;
 
-
-    db.query(clientSql, [meterId], (err, clients) => {
+    db.query(clientSql, [meterNumber], (err, clients) => {
 
         if (err) {
-            console.error('Client search error:', err);
+            console.error('Public client lookup error:', err);
 
             return res.status(500).json({
                 success: false,
-                message: 'Failed to find client'
+                message: 'Unable to retrieve account'
             });
         }
 
-
-        // Client doesn't exist
         if (clients.length === 0) {
-
             return res.status(404).json({
                 success: false,
-                message: 'Client not found.'
+                message: 'Account not found'
             });
         }
-
 
         const client = clients[0];
 
@@ -100,24 +159,38 @@ router.get('/search/:meter_id', (req, res) => {
         // --------------------------------
 
         const unpaidBillsSql = `
-            SELECT *
+            SELECT
+                bill_id,
+                meter_id,
+                pre_reading,
+                curr_reading,
+                tcmeter,
+                amount,
+                surcharge,
+                bill_amount,
+                duedate,
+                total_paid,
+                balance,
+                status
             FROM client_bills
             WHERE meter_id = ?
             ORDER BY duedate ASC, bill_id ASC
         `;
 
-
         db.query(
             unpaidBillsSql,
-            [meterId],
+            [meterNumber],
             (err, unpaidBills) => {
 
                 if (err) {
-                    console.error('Unpaid bills error:', err);
+                    console.error(
+                        'Public unpaid bills error:',
+                        err
+                    );
 
                     return res.status(500).json({
                         success: false,
-                        message: 'Failed to retrieve unpaid bills'
+                        message: 'Unable to retrieve bills'
                     });
                 }
 
@@ -127,54 +200,51 @@ router.get('/search/:meter_id', (req, res) => {
                 // --------------------------------
 
                 const historySql = `
-                    SELECT *
+                    SELECT
+                        payment_id,
+                        bill_id,
+                        meter_id,
+                        payment_date,
+                        amount_paid
                     FROM client_payment_history
                     WHERE meter_id = ?
                     ORDER BY payment_date DESC, payment_id DESC
                 `;
 
-
                 db.query(
                     historySql,
-                    [meterId],
+                    [meterNumber],
                     (err, paymentHistory) => {
 
                         if (err) {
                             console.error(
-                                'Payment history error:',
+                                'Public payment history error:',
                                 err
                             );
 
                             return res.status(500).json({
                                 success: false,
-                                message:
-                                    'Failed to retrieve payment history'
+                                message: 'Unable to retrieve payment history'
                             });
                         }
 
 
                         // --------------------------------
-                        // 4. SEND EVERYTHING TO CLIENT
+                        // 4. RETURN ONLY REQUIRED DATA
                         // --------------------------------
 
-                        res.json({
+                        return res.json({
                             success: true,
-
-                            client: client,
-
-                            unpaidBills: unpaidBills,
-
-                            paymentHistory: paymentHistory
+                            client,
+                            unpaidBills,
+                            paymentHistory
                         });
-
                     }
                 );
-
             }
         );
-
     });
-
 });
+
 
 module.exports = router

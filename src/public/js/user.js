@@ -33,7 +33,7 @@ searchForm.addEventListener('submit', async function (event) {
     try {
 
         const response = await fetch(
-            `http://localhost:3000/api/view-account/search/${meterId}`
+            `http://localhost:3000/api/view-account/search/account/${meterId}`
         );
 
 
@@ -125,11 +125,9 @@ function displayBills(bills) {
     const container =
         document.getElementById('billsContainer');
 
-
     section.style.display = 'block';
 
     container.innerHTML = '';
-
 
     // ========================================
     // NO OUTSTANDING BILLS
@@ -137,17 +135,27 @@ function displayBills(bills) {
 
     if (!bills || bills.length === 0) {
 
-        container.innerHTML = `
-            <div class="bill-card">
+        const billCard =
+            document.createElement('div');
 
-                <h3>✓ No Outstanding Bills</h3>
+        billCard.className = 'bill-card';
 
-                <p>
-                    You have no unpaid bills at this time.
-                </p>
+        const heading =
+            document.createElement('h3');
 
-            </div>
-        `;
+        heading.textContent =
+            '✓ No Outstanding Bills';
+
+        const paragraph =
+            document.createElement('p');
+
+        paragraph.textContent =
+            'You have no unpaid bills at this time.';
+
+        billCard.appendChild(heading);
+        billCard.appendChild(paragraph);
+
+        container.appendChild(billCard);
 
         return;
     }
@@ -196,172 +204,248 @@ function displayBills(bills) {
 
 
         // ========================================
-        // BILL HTML
+        // BILL HEADER
         // ========================================
 
-        billElement.innerHTML = `
+        const billHeader =
+            document.createElement('div');
 
-            <!-- BILL HEADER -->
-
-            <div class="bill-header">
-
-                <div class="bill-number">
-
-                    <span>Bill</span>
-
-                    <h3>
-                        #${bill.bill_id}
-                    </h3>
-
-                </div>
+        billHeader.className = 'bill-header';
 
 
-                <span class="status">
-                    ${bill.status}
-                </span>
+        const billNumber =
+            document.createElement('div');
 
-            </div>
-
-
-            <!-- METER INFORMATION -->
-
-            <div class="bill-section">
-
-                <h4>
-                    Meter Reading
-                </h4>
+        billNumber.className = 'bill-number';
 
 
-                <div class="bill-details">
+        const billLabel =
+            document.createElement('span');
 
-                    <div>
-                        <label>
-                            Previous Reading:
-                        </label>
-
-                        <span>
-                            ${bill.pre_reading}
-                        </span>
-                    </div>
+        billLabel.textContent = 'Bill';
 
 
-                    <div>
-                        <label>
-                            Current Reading:
-                        </label>
+        const billHeading =
+            document.createElement('h3');
 
-                        <span>
-                            ${bill.curr_reading}
-                        </span>
-                    </div>
+        billHeading.textContent =
+            `#${bill.bill_id}`;
 
 
-                    <div>
-                        <label>
-                            Consumption:
-                        </label>
-
-                        <span>
-                            ${bill.tcmeter}
-                        </span>
-                    </div>
-
-                </div>
-
-            </div>
+        billNumber.appendChild(billLabel);
+        billNumber.appendChild(billHeading);
 
 
-            <hr>
+        const status =
+            document.createElement('span');
+
+        status.className = 'status';
+
+        status.textContent =
+            bill.status || 'UNKNOWN';
 
 
-            <!-- BILL SUMMARY -->
-
-            <div class="bill-section">
-
-                <h4>
-                    Bill Summary
-                </h4>
+        billHeader.appendChild(billNumber);
+        billHeader.appendChild(status);
 
 
-                <div class="bill-details">
+        // ========================================
+        // METER INFORMATION
+        // ========================================
 
-                    <div>
-                        <label>
-                            Amount:
-                        </label>
+        const meterSection =
+            document.createElement('div');
 
-                        <span>
-                            ₱${amount.toFixed(2)}
-                        </span>
-                    </div>
+        meterSection.className = 'bill-section';
 
 
-                    <div>
-                        <label>
-                            Surcharge:
-                        </label>
+        const meterHeading =
+            document.createElement('h4');
 
-                        <span>
-                            ₱${surcharge.toFixed(2)}
-                        </span>
-                    </div>
+        meterHeading.textContent =
+            'Meter Reading';
 
 
-                    <div>
-                        <label>
-                            Total Bill:
-                        </label>
+        const meterDetails =
+            document.createElement('div');
 
-                        <span>
-                            ₱${billAmount.toFixed(2)}
-                        </span>
-                    </div>
+        meterDetails.className = 'bill-details';
 
 
-                    <div class="balance-row">
+        function addDetail(container, labelText, valueText) {
 
-                        <label>
-                            Balance:
-                        </label>
+            const detail =
+                document.createElement('div');
 
-                        <span class="balance">
-                            ₱${balance.toFixed(2)}
-                        </span>
+            const label =
+                document.createElement('label');
 
-                    </div>
+            label.textContent =
+                labelText;
+
+            const value =
+                document.createElement('span');
+
+            value.textContent =
+                valueText;
+
+            detail.appendChild(label);
+            detail.appendChild(value);
+
+            container.appendChild(detail);
+        }
 
 
-                    <div class="due-date">
+        addDetail(
+            meterDetails,
+            'Previous Reading:',
+            bill.pre_reading
+        );
 
-                        <label>
-                            Due Date:
-                        </label>
+        addDetail(
+            meterDetails,
+            'Current Reading:',
+            bill.curr_reading
+        );
 
-                        <span>
-                            ${formatDate(bill.duedate)}
-                        </span>
+        addDetail(
+            meterDetails,
+            'Consumption:',
+            bill.tcmeter
+        );
 
-                    </div>
 
-                </div>
+        meterSection.appendChild(meterHeading);
+        meterSection.appendChild(meterDetails);
 
-            </div>
 
-        `;
+        // ========================================
+        // BILL SUMMARY
+        // ========================================
 
+        const separator =
+            document.createElement('hr');
+
+
+        const summarySection =
+            document.createElement('div');
+
+        summarySection.className =
+            'bill-section';
+
+
+        const summaryHeading =
+            document.createElement('h4');
+
+        summaryHeading.textContent =
+            'Bill Summary';
+
+
+        const summaryDetails =
+            document.createElement('div');
+
+        summaryDetails.className =
+            'bill-details';
+
+
+        addDetail(
+            summaryDetails,
+            'Amount:',
+            `₱${amount.toFixed(2)}`
+        );
+
+        addDetail(
+            summaryDetails,
+            'Surcharge:',
+            `₱${surcharge.toFixed(2)}`
+        );
+
+        addDetail(
+            summaryDetails,
+            'Total Bill:',
+            `₱${billAmount.toFixed(2)}`
+        );
+
+
+        // Balance row
+        const balanceRow =
+            document.createElement('div');
+
+        balanceRow.className =
+            'balance-row';
+
+
+        const balanceLabel =
+            document.createElement('label');
+
+        balanceLabel.textContent =
+            'Balance:';
+
+
+        const balanceValue =
+            document.createElement('span');
+
+        balanceValue.className =
+            'balance';
+
+        balanceValue.textContent =
+            `₱${balance.toFixed(2)}`;
+
+
+        balanceRow.appendChild(balanceLabel);
+        balanceRow.appendChild(balanceValue);
+
+
+        // Due date
+        const dueDate =
+            document.createElement('div');
+
+        dueDate.className =
+            'due-date';
+
+
+        const dueDateLabel =
+            document.createElement('label');
+
+        dueDateLabel.textContent =
+            'Due Date:';
+
+
+        const dueDateValue =
+            document.createElement('span');
+
+        dueDateValue.textContent =
+            formatDate(bill.duedate);
+
+
+        dueDate.appendChild(dueDateLabel);
+        dueDate.appendChild(dueDateValue);
+
+
+        summaryDetails.appendChild(balanceRow);
+        summaryDetails.appendChild(dueDate);
+
+
+        summarySection.appendChild(summaryHeading);
+        summarySection.appendChild(summaryDetails);
+
+
+        // ========================================
+        // ADD EVERYTHING TO BILL CARD
+        // ========================================
+
+        billElement.appendChild(billHeader);
+        billElement.appendChild(meterSection);
+        billElement.appendChild(separator);
+        billElement.appendChild(summarySection);
 
         billsList.appendChild(billElement);
-
     });
 
 
-    // ========================================
-    // ADD TO PAGE
-    // ========================================
-
     container.appendChild(billsList);
-
 }
+
 
 // ========================================
 // DISPLAY PAYMENT HISTORY
@@ -375,7 +459,6 @@ function displayPaymentHistory(history) {
     const container =
         document.getElementById('historyContainer');
 
-
     section.style.display = 'block';
 
     container.innerHTML = '';
@@ -387,15 +470,23 @@ function displayPaymentHistory(history) {
 
     if (!history || history.length === 0) {
 
-        container.innerHTML = `
-            <div class="no-history">
+        const noHistory =
+            document.createElement('div');
 
-                <p>
-                    No payment history available.
-                </p>
+        noHistory.className =
+            'no-history';
 
-            </div>
-        `;
+
+        const paragraph =
+            document.createElement('p');
+
+        paragraph.textContent =
+            'No payment history available.';
+
+
+        noHistory.appendChild(paragraph);
+
+        container.appendChild(noHistory);
 
         return;
     }
@@ -408,7 +499,8 @@ function displayPaymentHistory(history) {
     const paymentHistory =
         document.createElement('div');
 
-    paymentHistory.className = 'payment-history';
+    paymentHistory.className =
+        'payment-history';
 
 
     // ========================================
@@ -427,59 +519,70 @@ function displayPaymentHistory(history) {
         const paymentCard =
             document.createElement('div');
 
-        paymentCard.className = 'payment';
+        paymentCard.className =
+            'payment';
 
 
-        paymentCard.innerHTML = `
+        function addPaymentDetail(
+            container,
+            labelText,
+            valueText
+        ) {
 
-            <div>
-                <span class="payment-label">
-                    Bill #
-                </span>
-
-                <strong>
-                #${payment.bill_id}
-                </strong>
-            </div>
+            const wrapper =
+                document.createElement('div');
 
 
-            <div>
-                <span class="payment-label">
-                    Bill Amount
-                </span>
+            const label =
+                document.createElement('span');
 
-                <strong>
-                ₱${billAmount.toFixed(2)}
-                </strong>
-            </div>
+            label.className =
+                'payment-label';
 
-
-            <div>
-                <span class="payment-label">
-                    Amount Paid
-                </span>
-
-                <strong>
-                ₱${amountPaid.toFixed(2)}
-                </strong>
-            </div>
+            label.textContent =
+                labelText;
 
 
-            <div>
-                <span class="payment-label">
-                    Payment Date
-                </span>
+            const value =
+                document.createElement('strong');
 
-                <strong>
-                ${formatDate(payment.payment_date)}
-                </strong>
-            </div>
+            value.textContent =
+                valueText;
 
-        `;
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(value);
+
+            container.appendChild(wrapper);
+        }
+
+
+        addPaymentDetail(
+            paymentCard,
+            'Bill #',
+            `#${payment.bill_id}`
+        );
+
+        addPaymentDetail(
+            paymentCard,
+            'Bill Amount',
+            `₱${billAmount.toFixed(2)}`
+        );
+
+        addPaymentDetail(
+            paymentCard,
+            'Amount Paid',
+            `₱${amountPaid.toFixed(2)}`
+        );
+
+        addPaymentDetail(
+            paymentCard,
+            'Payment Date',
+            formatDate(payment.payment_date)
+        );
 
 
         paymentHistory.appendChild(paymentCard);
-
     });
 
 
@@ -488,7 +591,6 @@ function displayPaymentHistory(history) {
     // ========================================
 
     container.appendChild(paymentHistory);
-
 }
 
 

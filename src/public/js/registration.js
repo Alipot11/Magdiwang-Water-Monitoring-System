@@ -32,7 +32,7 @@ registration_form.addEventListener('submit', async (event) => {
         window.location.href = "view_client.html"
 
     }   catch (error) {
-        console.Error(error);
+        console.error(error);
         alert('Error registering account')
     }
 });
