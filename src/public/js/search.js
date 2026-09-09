@@ -2,22 +2,34 @@
 document.getElementById('search_button').addEventListener('click', search_account);
 
 async function search_account() {
-    const search = document.getElementById('search_input').value;
+    const search = document.getElementById('search_input').value.trim();
+
+    if (!search) {
+        alert('Please enter a meter number.');
+        return;
+    }
 
     try {
-        const response = await fetch(`http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
-        {
-            credentials: 'include'
+        const response = await fetch(
+            `http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+            {
+                credentials: 'include'
+            }
+        );
+
+        const accountData = await response.json();
+
+        if (!response.ok || !accountData.success) {
+            throw new Error(
+                accountData.message || 'Search failed'
+            );
         }
-    );
 
-        const accounts = await response.json();
-
-        display_account(accounts);
+        display_account(accountData.accounts);
 
     } catch (error) {
         console.error(error);
-        alert('Search failed');
+        alert(error.message || 'Search failed');
     }
 }
 
@@ -25,28 +37,67 @@ async function search_account() {
 // function for displaying account
 function display_account(accounts) {
     const table = document.getElementById('account_table');
-
     table.innerHTML = '';
-    
-    if (accounts.length === 0) {
-        table.innerHTML = `
-        <p>No account yet</p>`;
 
+    if (accounts.length === 0) {
+        const message = document.createElement('p');
+        message.textContent = 'No account yet';
+        table.appendChild(message);
         return;
     }
+
+    // Safely display text that contains <br> separators
+    function appendHistoryText(container, value) {
+        const parts = String(value || '').split(/<br\s*\/?>/gi);
+
+        parts.forEach((part, index) => {
+            const text = document.createTextNode(part);
+            container.appendChild(text);
+
+            if (index < parts.length - 1) {
+                container.appendChild(document.createElement('br'));
+            }
+        });
+    }
+
     accounts.forEach(account => {
-        const row = `
-                <p>Meter No: ${account.meter_id}</p>
-                <p>Name: ${account.first_name} ${account.last_name}</p>
-                <p>Address: ${account.barangay} (${account.sitio})</p>
-                <p>Balance: ${account.balance}</p>
-                <br>
-                <h4>Payments</h4>
-                <p>${account.payments}</p>
-                <h4>Bills</h4>
-                <p>${account.bills}</p>
-           `;
-        table.innerHTML += row;
+
+        function addParagraph(label, value) {
+            const p = document.createElement('p');
+            p.textContent = `${label}${value ?? ''}`;
+            table.appendChild(p);
+        }
+
+        addParagraph('Meter No: ', account.meter_id);
+        addParagraph(
+            'Name: ',
+            `${account.first_name ?? ''} ${account.last_name ?? ''}`
+        );
+        addParagraph(
+            'Address: ',
+            `${account.barangay ?? ''} (${account.sitio ?? ''})`
+        );
+        addParagraph('Balance: ', account.balance);
+
+        table.appendChild(document.createElement('br'));
+
+        // Payments
+        const paymentsHeading = document.createElement('h4');
+        paymentsHeading.textContent = 'Payments';
+        table.appendChild(paymentsHeading);
+
+        const payments = document.createElement('p');
+        appendHistoryText(payments, account.payments || 'No payment history');
+        table.appendChild(payments);
+
+        // Bills
+        const billsHeading = document.createElement('h4');
+        billsHeading.textContent = 'Bills';
+        table.appendChild(billsHeading);
+
+        const bills = document.createElement('p');
+        appendHistoryText(bills, account.bills || 'No bills recorded');
+        table.appendChild(bills);
     });
 }
 
@@ -74,14 +125,19 @@ async function pay() {
             }
         );
 
-        const accounts = await response.json();
+        const accountData = await response.json();
 
-        if (!response.ok || accounts.length === 0) {
+        if (
+            !response.ok ||
+            !accountData.success ||
+            !Array.isArray(accountData.accounts) ||
+            accountData.accounts.length === 0
+        ) {
             alert('Account not found.');
             return;
         }
 
-        const account = accounts[0];
+        const account = accountData.accounts[0];
 
         // Automatically fill meter number
         document.getElementById('payment_meter_id').value =
@@ -99,13 +155,18 @@ async function pay() {
             }
         );
 
-        const bills = await billResponse.json();
+        const billData = await billResponse.json();
 
-        if (!billResponse.ok) {
+        if (
+            !billResponse.ok ||
+            !billData.success
+        ) {
             throw new Error(
-                bills.message || 'Failed to load bills'
+                billData.message || 'Failed to load bills'
             );
         }
+
+        const bills = billData.bills;
 
         const billSelect =
             document.getElementById('bill_id');
