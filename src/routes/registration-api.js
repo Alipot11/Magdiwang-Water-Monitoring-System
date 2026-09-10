@@ -4,7 +4,6 @@ const db = require('../../database.js');
 const { require_admin } = require('../middleware/auth.js');
 
 
-// Valid barangays used by the registration form
 const VALID_BARANGAYS = new Set([
     'agutay',
     'agsao',
@@ -18,9 +17,7 @@ const VALID_BARANGAYS = new Set([
 ]);
 
 
-// POST /api/register
-// Register a new customer account
-router.post('/', require_admin, (req, res) => {
+router.post('/', require_admin, async (req, res) => {
 
     let {
         meter_id,
@@ -155,60 +152,117 @@ router.post('/', require_admin, (req, res) => {
     }
 
 
-    // --------------------------------
-    // 8. INSERT CUSTOMER
-    // --------------------------------
+    let connection;
 
-    const sql = `
-        INSERT INTO customers
-        (
-            meter_id,
-            first_name,
-            last_name,
-            barangay,
-            sitio
-        )
-        VALUES (?, ?, ?, ?, ?)
-    `;
+    try {
 
-    db.query(
-        sql,
-        [
-            meterNumber,
-            first_name,
-            last_name,
-            barangay,
-            sitio
-        ],
-        (err) => {
+        connection = await db.promise().getConnection();
 
-            if (err) {
-
-                console.error('Registration error:', err);
+        await connection.beginTransaction();
 
 
-                // Duplicate meter ID
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(409).json({
-                        success: false,
-                        message: 'A customer with this meter number already exists'
-                    });
-                }
+        // --------------------------------
+        // 8. INSERT CUSTOMER
+        // --------------------------------
+
+        await connection.query(
+            `
+                INSERT INTO customers
+                (
+                    meter_id,
+                    first_name,
+                    last_name,
+                    barangay,
+                    sitio
+                )
+                VALUES (?, ?, ?, ?, ?)
+            `,
+            [
+                meterNumber,
+                first_name,
+                last_name,
+                barangay,
+                sitio
+            ]
+        );
 
 
-                return res.status(500).json({
-                    success: false,
-                    message: 'Failed to register account'
-                });
+        // --------------------------------
+        // 9. INSERT AUDIT LOG
+        // --------------------------------
+
+        await connection.query(
+            `
+                INSERT INTO audit_logs
+                (
+                    user_id,
+                    meter_id,
+                    owner_first_name,
+                    owner_last_name,
+                    action,
+                    table_name,
+                    record_id,
+                    description
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+            [
+                req.session.user.user_id,
+                meterNumber,
+                first_name,
+                last_name,
+                'CREATE',
+                'customers',
+                meterNumber,
+                `Customer account created for meter ${meterNumber}`
+            ]
+        );
+
+
+        // --------------------------------
+        // 10. COMMIT
+        // --------------------------------
+
+        await connection.commit();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Account registered successfully'
+        });
+
+    } catch (err) {
+
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error('Registration rollback error:', rollbackError);
             }
+        }
+
+        console.error('Registration error:', err);
 
 
-            return res.status(201).json({
-                success: true,
-                message: 'Account registered successfully'
+        // Duplicate meter ID
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({
+                success: false,
+                message: 'A customer with this meter number already exists'
             });
         }
-    );
+
+
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to register account'
+        });
+
+    } finally {
+
+        if (connection) {
+            connection.release();
+        }
+    }
 });
 
 

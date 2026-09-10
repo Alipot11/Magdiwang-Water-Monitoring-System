@@ -5,7 +5,8 @@ const {require_admin, require_staff} = require('../middleware/auth.js')
 
 
 // Post a bill
-router.post('/', require_admin, (req, res) => {
+// Post a bill
+router.post('/', require_admin, async (req, res) => {
 
     const {
         meter_id,
@@ -109,6 +110,30 @@ router.post('/', require_admin, (req, res) => {
         });
     }
 
+    const calculatedCubicMeter = currentReading - previousReading;
+
+    if (
+        Math.round(totalCubicMeter * 100) !==
+        Math.round(calculatedCubicMeter * 100)
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Total cubic meter must equal current reading minus previous reading'
+        });
+    }
+
+    const calculatedBillAmount = billAmount + surchargeAmount;
+
+    if (
+        Math.round(finalBillAmount * 100) !==
+        Math.round(calculatedBillAmount * 100)
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Bill amount must equal amount plus surcharge'
+        });
+    }
+
 
     // --------------------------------
     // 6. VALIDATE DUE DATE
@@ -125,57 +150,63 @@ router.post('/', require_admin, (req, res) => {
     }
 
 
-    // --------------------------------
-    // 7. CHECK THAT ACCOUNT EXISTS
-    // --------------------------------
+    let connection;
 
-    const customerSql = `
-        SELECT meter_id
-        FROM customers
-        WHERE meter_id = ?
-        LIMIT 1
-    `;
+    try {
 
-    db.query(customerSql, [meterNumber], (err, customers) => {
+        connection = await db.promise().getConnection();
 
-        if (err) {
-            console.error('Customer validation error:', err);
+        await connection.beginTransaction();
 
-            return res.status(500).json({
-                success: false,
-                message: 'Unable to validate account'
-            });
-        }
+
+        // --------------------------------
+        // 7. GET CUSTOMER
+        // --------------------------------
+
+        const [customers] = await connection.query(
+            `
+                SELECT
+                    meter_id,
+                    first_name,
+                    last_name
+                FROM customers
+                WHERE meter_id = ?
+                LIMIT 1
+            `,
+            [meterNumber]
+        );
 
         if (customers.length === 0) {
+            await connection.rollback();
+
             return res.status(404).json({
                 success: false,
                 message: 'Meter account not found'
             });
         }
 
+        const customer = customers[0];
+
 
         // --------------------------------
         // 8. INSERT BILL
         // --------------------------------
 
-        const sql = `
-            INSERT INTO bills
-            (
-                meter_id,
-                curr_reading,
-                pre_reading,
-                tcmeter,
-                amount,
-                surcharge,
-                bill_amount,
-                duedate
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `;
-
-        db.query(
-            sql,
+        const [result] = await connection.query(
+            `
+                INSERT INTO bills
+                (
+                    meter_id,
+                    curr_reading,
+                    pre_reading,
+                    tcmeter,
+                    amount,
+                    surcharge,
+                    bill_amount,
+                    duedate
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
             [
                 meterNumber,
                 currentReading,
@@ -185,26 +216,75 @@ router.post('/', require_admin, (req, res) => {
                 surchargeAmount,
                 finalBillAmount,
                 duedate
-            ],
-            (err, result) => {
-
-                if (err) {
-                    console.error('Post bill error:', err);
-
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Failed to post bill'
-                    });
-                }
-
-                return res.status(201).json({
-                    success: true,
-                    message: 'Bill posted',
-                    bill_id: result.insertId
-                });
-            }
+            ]
         );
-    });
+
+        const billId = result.insertId;
+
+
+        // --------------------------------
+        // 9. INSERT AUDIT LOG
+        // --------------------------------
+
+        await connection.query(
+            `
+                INSERT INTO audit_logs
+                (
+                    user_id,
+                    meter_id,
+                    owner_first_name,
+                    owner_last_name,
+                    action,
+                    table_name,
+                    record_id,
+                    description
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+            [
+                req.session.user.user_id,
+                customer.meter_id,
+                customer.first_name,
+                customer.last_name,
+                'CREATE',
+                'bills',
+                billId,
+                `Bill #${billId} posted for meter ${customer.meter_id}`
+            ]
+        );
+
+
+        // --------------------------------
+        // 10. COMMIT
+        // --------------------------------
+
+        await connection.commit();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Bill posted',
+            bill_id: billId
+        });
+
+    } catch (err) {
+
+        if (connection) {
+            await connection.rollback();
+        }
+
+        console.error('Post bill error:', err);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to post bill'
+        });
+
+    } finally {
+
+        if (connection) {
+            connection.release();
+        }
+    }
 });
 
 

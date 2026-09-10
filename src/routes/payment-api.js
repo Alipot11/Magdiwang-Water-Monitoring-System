@@ -77,8 +77,8 @@ router.post('/', require_payment_access, async (req, res) => {
     // --------------------------------
 
     if (
-        typeof payment_date !== 'string' ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(payment_date)
+    typeof payment_date !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(payment_date)
     ) {
         return res.status(400).json({
             success: false,
@@ -86,6 +86,20 @@ router.post('/', require_payment_access, async (req, res) => {
         });
     }
 
+    const [year, month, day] = payment_date.split('-').map(Number);
+
+    const paymentDate = new Date(year, month - 1, day);
+
+    if (
+        paymentDate.getFullYear() !== year ||
+        paymentDate.getMonth() !== month - 1 ||
+        paymentDate.getDate() !== day
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid payment date'
+        });
+    }
 
     // --------------------------------
     // 4. VALIDATE PAYMENT AMOUNT
@@ -156,6 +170,33 @@ router.post('/', require_payment_access, async (req, res) => {
             `,
             [billId]
         );
+
+
+        // CUSTOMER LOOKUP
+
+        const [customerResults] = await connection.query(
+            `
+                SELECT
+                    meter_id,
+                    first_name,
+                    last_name
+                FROM customers
+                WHERE meter_id = ?
+                LIMIT 1
+            `,
+            [meterNumber]
+        );
+
+        if (customerResults.length === 0) {
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: 'Meter account not found'
+            });
+        }
+
+        const customer = customerResults[0];
 
 
         // Bill doesn't exist
@@ -248,6 +289,36 @@ router.post('/', require_payment_access, async (req, res) => {
                 meterNumber,
                 payment_date,
                 paymentAmount
+            ]
+        );
+
+
+        // AUDIT TRAIL
+
+        await connection.query(
+            `
+                INSERT INTO audit_logs
+                (
+                    user_id,
+                    meter_id,
+                    owner_first_name,
+                    owner_last_name,
+                    action,
+                    table_name,
+                    record_id,
+                    description
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `,
+            [
+                req.session.user.user_id,
+                customer.meter_id,
+                customer.first_name,
+                customer.last_name,
+                'CREATE',
+                'payments',
+                insertResult.insertId,
+                `Payment #${insertResult.insertId} recorded for meter ${customer.meter_id}`
             ]
         );
 
