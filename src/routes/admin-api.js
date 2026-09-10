@@ -1,21 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const db = require('../../database.js');
 const bcrypt = require('bcryptjs');
-const {require_login} = require('../middleware/auth.js')
+const { require_login } = require('../middleware/auth.js');
 
 
-// for admin login
-router.post('/login', (req, res) => {
+// --------------------------------
+// LOGIN RATE LIMITER
+// --------------------------------
 
-    const { username, password } = req.body;
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,                  // maximum 10 login attempts
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: {
+        success: false,
+        message: 'Too many login attempts. Please try again later.'
+    }
+});
 
-    if (!username || !password) {
+
+// --------------------------------
+// ADMIN / STAFF LOGIN
+// --------------------------------
+
+router.post('/login', loginLimiter, (req, res) => {
+
+    let { username, password } = req.body;
+
+    // Make sure values are strings before processing them
+    if (
+        typeof username !== 'string' ||
+        typeof password !== 'string' ||
+        !username.trim() ||
+        !password
+    ) {
         return res.status(400).json({
             success: false,
             message: 'Username and password are required.'
         });
     }
+
+    username = username.trim();
+
 
     const sql = `
         SELECT
@@ -41,6 +70,11 @@ router.post('/login', (req, res) => {
             });
         }
 
+
+        // --------------------------------
+        // USER NOT FOUND
+        // --------------------------------
+
         if (results.length === 0) {
 
             return res.status(401).json({
@@ -49,7 +83,13 @@ router.post('/login', (req, res) => {
             });
         }
 
+
         const user = results[0];
+
+
+        // --------------------------------
+        // ACCOUNT DISABLED
+        // --------------------------------
 
         if (!user.is_active) {
 
@@ -59,10 +99,27 @@ router.post('/login', (req, res) => {
             });
         }
 
-        const passwordMatch = await bcrypt.compare(
-            password,
-            user.password_hash
-        );
+
+        // --------------------------------
+        // CHECK PASSWORD
+        // --------------------------------
+
+        let passwordMatch;
+
+        try {
+            passwordMatch = await bcrypt.compare(
+                password,
+                user.password_hash
+            );
+        } catch (error) {
+            console.error('Password verification error:', error);
+
+            return res.status(500).json({
+                success: false,
+                message: 'Login failed.'
+            });
+        }
+
 
         if (!passwordMatch) {
 
@@ -72,42 +129,77 @@ router.post('/login', (req, res) => {
             });
         }
 
-        req.session.user = {
-            user_id: user.user_id,
-            username: user.username,
-            full_name: user.full_name,
-            role: user.role
-        };
 
-        res.json({
-            success: true,
-            message: 'Login successful.',
-            user: req.session.user
+        // --------------------------------
+        // REGENERATE SESSION ID
+        // --------------------------------
+        // This prevents session fixation after login.
+
+        req.session.regenerate((err) => {
+
+            if (err) {
+                console.error('Session regeneration error:', err);
+
+                return res.status(500).json({
+                    success: false,
+                    message: 'Login failed.'
+                });
+            }
+
+
+            // --------------------------------
+            // CREATE AUTHENTICATED SESSION
+            // --------------------------------
+
+            req.session.user = {
+                user_id: user.user_id,
+                username: user.username,
+                full_name: user.full_name,
+                role: user.role
+            };
+
+
+            return res.json({
+                success: true,
+                message: 'Login successful.',
+                user: req.session.user
+            });
         });
     });
 });
 
-// session-check
-router.get('/me',require_login,(req, res,) => {
+
+// --------------------------------
+// SESSION CHECK
+// --------------------------------
+
+router.get('/me', require_login, (req, res) => {
 
     res.json({
         success: true,
         user: req.session.user
-    })
-})
+    });
+});
 
-// for admin logout
+
+// --------------------------------
+// LOGOUT
+// --------------------------------
+
 router.post('/logout', require_login, (req, res) => {
 
     req.session.destroy((err) => {
 
         if (err) {
-            
+
+            console.error('Logout error:', err);
+
             return res.status(500).json({
                 success: false,
                 message: 'Failed to logout.'
             });
         }
+
 
         res.json({
             success: true,
@@ -117,4 +209,4 @@ router.post('/logout', require_login, (req, res) => {
 });
 
 
-module.exports = router
+module.exports = router;
