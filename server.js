@@ -14,6 +14,10 @@ const admin_login = require('./src/routes/admin-api.js')
 
 const sessionStore = new MySQLSessionStore();
 
+setInterval(() => {
+    sessionStore.cleanupExpired();
+}, 60 * 60 * 1000);
+
 app.use(session({
     store: sessionStore,
     secret: process.env.SESSION_SECRET,
