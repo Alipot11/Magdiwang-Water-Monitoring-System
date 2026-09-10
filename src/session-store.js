@@ -237,6 +237,25 @@ class MySQLSessionStore extends session.Store {
                 callback(error);
             });
     }
+
+
+    cleanupExpired() {
+    const sql = `
+        DELETE FROM sessions
+        WHERE expires <= NOW()
+    `;
+
+    db.promise()
+        .query(sql)
+        .then(([result]) => {
+            if (result.affectedRows > 0) {
+                console.log(`Removed ${result.affectedRows} expired sessions`);
+            }
+        })
+        .catch((error) => {
+            console.error('Failed to clean expired sessions:', error);
+        });
+    }
 }
 
 
