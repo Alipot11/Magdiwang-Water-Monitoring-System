@@ -1,12 +1,13 @@
 async function loadClient() {
     try {
-        const response = await fetch('http://localhost:3000/api/view-account',{credentials: 'include'});
+        const response = await fetch('/api/view-account',{credentials: 'include'});
 
         if (!response.ok) {
             throw new Error('Failed to get account');
         }
 
-        const accounts = await response.json();
+        const data = await response.json();
+        const accounts = data.accounts;
 
         const table = document.getElementById('account_table');
 

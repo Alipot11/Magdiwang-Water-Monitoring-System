@@ -13,7 +13,7 @@ async function load_receipt() {
 
         // Get the selected payment and its complete bill information
         const response = await fetch(
-            `http://localhost:3000/api/payments/print?payment_id=${encodeURIComponent(paymentId)}`,
+            `/api/payments/print?payment_id=${encodeURIComponent(paymentId)}`,
             {
                 credentials: 'include'
             }
