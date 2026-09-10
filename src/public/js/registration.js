@@ -12,7 +12,7 @@ registration_form.addEventListener('submit', async (event) => {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/register', {
+        const response = await fetch('/api/register', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'

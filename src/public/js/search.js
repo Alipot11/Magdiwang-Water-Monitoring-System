@@ -11,7 +11,7 @@ async function search_account() {
 
     try {
         const response = await fetch(
-            `http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+            `/api/view-account/search?q=${encodeURIComponent(search)}`,
             {
                 credentials: 'include'
             }
@@ -119,7 +119,7 @@ async function pay() {
 
         // Find account
         const response = await fetch(
-            `http://localhost:3000/api/view-account/search?q=${encodeURIComponent(search)}`,
+            `/api/view-account/search?q=${encodeURIComponent(search)}`,
             {
                 credentials: 'include'
             }
@@ -149,7 +149,7 @@ async function pay() {
         // ==========================================
 
         const billResponse = await fetch(
-            `http://localhost:3000/api/bills/account/${account.meter_id}`,
+            `/api/bills/account/${account.meter_id}`,
             {
                 credentials: 'include'
             }
@@ -203,7 +203,7 @@ async function pay() {
         // ==========================================
 
         const paymentResponse = await fetch(
-            `http://localhost:3000/api/payments/print?meter_id=${account.meter_id}`,
+            `/api/payments/print?meter_id=${account.meter_id}`,
             {
                 credentials: 'include'
             }
@@ -320,7 +320,7 @@ payment_form.addEventListener('submit', async (event) => {
     try {
 
         const response = await fetch(
-            'http://localhost:3000/api/payments',
+            '/api/payments',
             {
                 method: 'POST',
                 headers: {

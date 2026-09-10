@@ -33,7 +33,7 @@ searchForm.addEventListener('submit', async function (event) {
     try {
 
         const response = await fetch(
-            `http://localhost:3000/api/view-account/search/account/${meterId}`
+            `/api/view-account/search/account/${meterId}`
         );
 
 
