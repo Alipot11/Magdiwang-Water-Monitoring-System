@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
+const path = require('path')
 const session = require('express-session');
-const bcrypt = require('bcryptjs');
+const MySQLSessionStore = require('./src/session-store.js');
 
 // api routes
 const view_api = require('./src/routes/view-api.js');
@@ -12,7 +12,10 @@ const payments_api = require('./src/routes/payment-api.js')
 const admin_login = require('./src/routes/admin-api.js')
 
 
+const sessionStore = new MySQLSessionStore();
+
 app.use(session({
+    store: sessionStore,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -24,12 +27,9 @@ app.use(session({
     }
 }));
 
-app.use(cors({
-    origin: 'http://localhost:5500',
-    credentials: true
-}));
-
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 
 // ROUTES
@@ -50,8 +50,12 @@ app.use('/api/register', registration_api)
 app.use('/api/payments', payments_api)
 
 // server
-app.get('/', (req,res) => {
-    res.send(`server is running`);
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'public', 'user.html'));
+});
+
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'public', 'admin-login.html'));
 });
 
 app.listen(3000,() => {

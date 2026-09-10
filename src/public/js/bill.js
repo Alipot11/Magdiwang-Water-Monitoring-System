@@ -15,7 +15,7 @@ bill_form.addEventListener('submit', async (event) => {
     };
 
     try {
-        const response = await fetch('http://localhost:3000/api/bills', {
+        const response = await fetch('/api/bills', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'

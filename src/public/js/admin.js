@@ -3,7 +3,7 @@ document.getElementById('logout_btn').addEventListener('click', async () => {
     try {
 
         const response = await fetch(
-            'http://localhost:3000/api/admin/logout',
+            '/api/admin/logout',
             {
                 method: 'POST',
                 credentials: 'include'
@@ -19,7 +19,7 @@ document.getElementById('logout_btn').addEventListener('click', async () => {
         }
 
         // Return to the login page
-        window.location.href = '../public/admin-login.html';
+        window.location.href = 'admin-login.html';
 
     } catch (error) {
 
