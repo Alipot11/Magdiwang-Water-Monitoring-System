@@ -59,7 +59,6 @@ async function search_account() {
         display_account(accountData.accounts);
 
     } catch (error) {
-        console.error(error);
         alert(error.message || 'Search failed');
     }
 }
@@ -183,9 +182,6 @@ function display_account(accounts) {
                 search_account();
 
             } catch (error) {
-
-                console.error(error);
-
                 alert(
                     error.message ||
                     'Failed to delete account.'
@@ -344,9 +340,6 @@ async function pay() {
 
 
     } catch (error) {
-
-        console.error(error);
-
         alert(
             error.message ||
             'Failed to load payment information.'
@@ -424,9 +417,6 @@ payment_form.addEventListener('submit', async (event) => {
         window.location.href = 'search.html';
 
     } catch (error) {
-
-        console.error(error);
-
         alert(
             error.message ||
             'Payment not successful'

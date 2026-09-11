@@ -53,7 +53,7 @@ async function loadAuditLogs() {
             currentPage >= data.pagination.totalPages;
 
     } catch (error) {
-        console.error('Audit log error:', error);
+        alert('Failed to load audit logs')
     }
 }
 

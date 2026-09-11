@@ -84,9 +84,6 @@ async function load_receipt() {
             payment.duedate.split('T')[0];
 
     } catch (error) {
-
-        console.error('Receipt loading error:', error);
-
         alert(error.message || 'Failed to load receipt.');
     }
 }

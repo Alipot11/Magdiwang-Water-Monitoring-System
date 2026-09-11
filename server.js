@@ -24,7 +24,13 @@ app.disable('x-powered-by');
 app.use(helmet({
     strictTransportSecurity: process.env.NODE_ENV === 'production'
         ? undefined
-        : false
+        : false,
+    contentSecurityPolicy: {
+        directives: {
+            'upgrade-insecure-requests':
+                process.env.NODE_ENV === 'production' ? [] : null
+        }
+    }
 }));
 
 app.use(session({
@@ -59,7 +65,7 @@ app.use('/api/bills', bills_api);
 // route api for registering client
 app.use('/api/register', registration_api)
 
-
+// route api for payments
 app.use('/api/payments', payments_api)
 
 // server

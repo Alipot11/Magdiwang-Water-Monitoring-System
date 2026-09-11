@@ -32,7 +32,6 @@ registration_form.addEventListener('submit', async (event) => {
         window.location.href = "admin.html"
 
     }   catch (error) {
-        console.error(error);
         alert('Error registering account')
     }
 });

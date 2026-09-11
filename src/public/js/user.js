@@ -78,9 +78,6 @@ searchForm.addEventListener('submit', async function (event) {
 
 
     } catch (error) {
-
-        console.error('Search error:', error);
-
         message.textContent =
             'Unable to connect to the server.';
 

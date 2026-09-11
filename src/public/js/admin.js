@@ -22,9 +22,6 @@ document.getElementById('logout_btn').addEventListener('click', async () => {
         window.location.href = 'admin-login.html';
 
     } catch (error) {
-
-        console.error('Logout error:', error);
-
         alert(
             error.message ||
             'Failed to logout.'

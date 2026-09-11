@@ -32,7 +32,6 @@ async function loadAccount() {
         document.getElementById('sitio').value = data.account.sitio;
 
     } catch (error) {
-        console.error('Load account error:', error);
         alert('Failed to load account.');
         window.location.href = '/search.html';
     }
@@ -73,7 +72,6 @@ form.addEventListener('submit', async (event) => {
         window.location.href = '/search.html';
 
     } catch (error) {
-        console.error('Update account error:', error);
         alert('Failed to update account.');
     }
 });
