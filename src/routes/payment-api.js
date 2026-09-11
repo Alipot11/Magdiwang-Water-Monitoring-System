@@ -1,10 +1,8 @@
-const express = require ('express');
+const express = require('express');
 const router = express.Router();
 const db = require('../../database.js');
-const {require_payment_access} = require('../middleware/auth.js')
+const { require_payment_access } = require('../middleware/auth.js');
 
-
-// Post payment
 router.post('/', require_payment_access, async (req, res) => {
 
     const {
@@ -13,11 +11,6 @@ router.post('/', require_payment_access, async (req, res) => {
         payment_date,
         amount_paid
     } = req.body;
-
-
-    // --------------------------------
-    // 1. VALIDATE BILL ID
-    // --------------------------------
 
     if (
         bill_id === undefined ||
@@ -32,20 +25,12 @@ router.post('/', require_payment_access, async (req, res) => {
 
     const billId = Number(bill_id);
 
-    if (
-        !Number.isSafeInteger(billId) ||
-        billId <= 0
-    ) {
+    if (!Number.isSafeInteger(billId) || billId <= 0) {
         return res.status(400).json({
             success: false,
             message: 'Invalid bill ID'
         });
     }
-
-
-    // --------------------------------
-    // 2. VALIDATE METER NUMBER
-    // --------------------------------
 
     if (
         meter_id === undefined ||
@@ -71,14 +56,9 @@ router.post('/', require_payment_access, async (req, res) => {
         });
     }
 
-
-    // --------------------------------
-    // 3. VALIDATE PAYMENT DATE
-    // --------------------------------
-
     if (
-    typeof payment_date !== 'string' ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(payment_date)
+        typeof payment_date !== 'string' ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(payment_date)
     ) {
         return res.status(400).json({
             success: false,
@@ -87,7 +67,6 @@ router.post('/', require_payment_access, async (req, res) => {
     }
 
     const [year, month, day] = payment_date.split('-').map(Number);
-
     const paymentDate = new Date(year, month - 1, day);
 
     if (
@@ -100,10 +79,6 @@ router.post('/', require_payment_access, async (req, res) => {
             message: 'Invalid payment date'
         });
     }
-
-    // --------------------------------
-    // 4. VALIDATE PAYMENT AMOUNT
-    // --------------------------------
 
     if (
         amount_paid === undefined ||
@@ -135,27 +110,13 @@ router.post('/', require_payment_access, async (req, res) => {
         });
     }
 
-
-    // --------------------------------
-    // 5. GET DATABASE CONNECTION
-    // --------------------------------
-
     let connection;
 
     try {
 
         connection = await db.promise().getConnection();
 
-        // --------------------------------
-        // 6. START TRANSACTION
-        // --------------------------------
-
         await connection.beginTransaction();
-
-
-        // --------------------------------
-        // 7. LOCK THE BILL
-        // --------------------------------
 
         const [billResults] = await connection.query(
             `
@@ -171,8 +132,27 @@ router.post('/', require_payment_access, async (req, res) => {
             [billId]
         );
 
+        if (billResults.length === 0) {
 
-        // CUSTOMER LOOKUP
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: 'Bill not found'
+            });
+        }
+
+        const bill = billResults[0];
+
+        if (Number(bill.meter_id) !== meterNumber) {
+
+            await connection.rollback();
+
+            return res.status(400).json({
+                success: false,
+                message: 'Bill does not belong to this meter'
+            });
+        }
 
         const [customerResults] = await connection.query(
             `
@@ -188,6 +168,7 @@ router.post('/', require_payment_access, async (req, res) => {
         );
 
         if (customerResults.length === 0) {
+
             await connection.rollback();
 
             return res.status(404).json({
@@ -197,41 +178,6 @@ router.post('/', require_payment_access, async (req, res) => {
         }
 
         const customer = customerResults[0];
-
-
-        // Bill doesn't exist
-        if (billResults.length === 0) {
-
-            await connection.rollback();
-
-            return res.status(404).json({
-                success: false,
-                message: 'Bill not found'
-            });
-        }
-
-
-        const bill = billResults[0];
-
-
-        // --------------------------------
-        // 8. VERIFY METER BELONGS TO BILL
-        // --------------------------------
-
-        if (Number(bill.meter_id) !== meterNumber) {
-
-            await connection.rollback();
-
-            return res.status(400).json({
-                success: false,
-                message: 'Bill does not belong to this meter'
-            });
-        }
-
-
-        // --------------------------------
-        // 9. GET TOTAL PAID WHILE BILL IS LOCKED
-        // --------------------------------
 
         const [paymentResults] = await connection.query(
             `
@@ -243,7 +189,6 @@ router.post('/', require_payment_access, async (req, res) => {
             [billId]
         );
 
-
         const billAmount = Number(bill.bill_amount);
         const totalPaid = Number(paymentResults[0].total_paid);
 
@@ -251,11 +196,6 @@ router.post('/', require_payment_access, async (req, res) => {
             billAmount - totalPaid,
             0
         );
-
-
-        // --------------------------------
-        // 10. CHECK OVERPAYMENT
-        // --------------------------------
 
         if (paymentAmount > currentBalance) {
 
@@ -268,32 +208,22 @@ router.post('/', require_payment_access, async (req, res) => {
             });
         }
 
-
-        // --------------------------------
-        // 11. INSERT PAYMENT
-        // --------------------------------
-
         const [insertResult] = await connection.query(
             `
                 INSERT INTO payments
                 (
                     bill_id,
-                    meter_id,
                     payment_date,
                     amount_paid
                 )
-                VALUES (?, ?, ?, ?)
+                VALUES (?, ?, ?)
             `,
             [
                 billId,
-                meterNumber,
                 payment_date,
                 paymentAmount
             ]
         );
-
-
-        // AUDIT TRAIL
 
         await connection.query(
             `
@@ -322,13 +252,7 @@ router.post('/', require_payment_access, async (req, res) => {
             ]
         );
 
-
-        // --------------------------------
-        // 12. COMMIT
-        // --------------------------------
-
         await connection.commit();
-
 
         return res.status(201).json({
             success: true,
@@ -336,21 +260,13 @@ router.post('/', require_payment_access, async (req, res) => {
             payment_id: insertResult.insertId
         });
 
-
     } catch (err) {
-
-        // --------------------------------
-        // 13. ROLLBACK ON ERROR
-        // --------------------------------
 
         if (connection) {
             try {
                 await connection.rollback();
             } catch (rollbackError) {
-                console.error(
-                    'Payment rollback error:',
-                    rollbackError
-                );
+                console.error('Payment rollback error:', rollbackError);
             }
         }
 
@@ -363,18 +279,12 @@ router.post('/', require_payment_access, async (req, res) => {
 
     } finally {
 
-        // --------------------------------
-        // 14. RELEASE CONNECTION
-        // --------------------------------
-
         if (connection) {
             connection.release();
         }
     }
 });
 
-// get payment records for printing
-// Get payment records for printing
 router.get('/print', require_payment_access, (req, res) => {
 
     const { meter_id, payment_id } = req.query;
@@ -402,15 +312,9 @@ router.get('/print', require_payment_access, (req, res) => {
 
     let value;
 
-    // --------------------------------
-    // 1. SEARCH BY PAYMENT ID
-    // --------------------------------
-
     if (payment_id !== undefined) {
 
-        if (
-            !/^\d+$/.test(String(payment_id))
-        ) {
+        if (!/^\d+$/.test(String(payment_id))) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid payment ID'
@@ -419,10 +323,7 @@ router.get('/print', require_payment_access, (req, res) => {
 
         const paymentId = Number(payment_id);
 
-        if (
-            !Number.isSafeInteger(paymentId) ||
-            paymentId <= 0
-        ) {
+        if (!Number.isSafeInteger(paymentId) || paymentId <= 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid payment ID'
@@ -436,15 +337,9 @@ router.get('/print', require_payment_access, (req, res) => {
 
         value = paymentId;
 
-    // --------------------------------
-    // 2. SEARCH BY METER NUMBER
-    // --------------------------------
-
     } else if (meter_id !== undefined) {
 
-        if (
-            !/^\d+$/.test(String(meter_id))
-        ) {
+        if (!/^\d+$/.test(String(meter_id))) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid meter number'
@@ -479,11 +374,6 @@ router.get('/print', require_payment_access, (req, res) => {
         });
     }
 
-
-    // --------------------------------
-    // 3. QUERY DATABASE
-    // --------------------------------
-
     db.query(sql, [value], (err, results) => {
 
         if (err) {
@@ -503,4 +393,4 @@ router.get('/print', require_payment_access, (req, res) => {
     });
 });
 
-module.exports = router
+module.exports = router;
