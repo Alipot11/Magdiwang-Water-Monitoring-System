@@ -29,7 +29,7 @@ registration_form.addEventListener('submit', async (event) => {
 
         registration_form.reset();
 
-        window.location.href = "view_client.html"
+        window.location.href = "admin.html"
 
     }   catch (error) {
         console.error(error);

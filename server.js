@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
 const path = require('path')
 const session = require('express-session');
 const MySQLSessionStore = require('./src/session-store.js');
@@ -18,6 +19,14 @@ setInterval(() => {
     sessionStore.cleanupExpired();
 }, 60 * 60 * 1000);
 
+app.disable('x-powered-by');
+
+app.use(helmet({
+    strictTransportSecurity: process.env.NODE_ENV === 'production'
+        ? undefined
+        : false
+}));
+
 app.use(session({
     store: sessionStore,
     secret: process.env.SESSION_SECRET,
@@ -31,7 +40,7 @@ app.use(session({
     }
 }));
 
-app.use(express.json());
+app.use(express.json({limit: "100kb"}));
 
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 

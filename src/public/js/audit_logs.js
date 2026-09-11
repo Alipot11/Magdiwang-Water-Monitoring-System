@@ -1,5 +1,5 @@
 let currentPage = 1;
-const limit = 50;
+const limit = 10;
 
 // DISPLAYS THE AUDIT LOGS FROM THE DATABASE
 async function loadAuditLogs() {
