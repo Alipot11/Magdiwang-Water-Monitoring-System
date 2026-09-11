@@ -1,11 +1,42 @@
+// HIDES THE EDIT AND DELETE IN THE SEARCH PAGE BY ROLE
+let currentUserRole = null;
+let userLoaded = false;
+
+async function loadCurrentUser() {
+    try {
+        const response = await fetch('/api/admin/me', {
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get user information');
+        }
+
+        const data = await response.json();
+        currentUserRole = data.user.role;
+        userLoaded = true;
+    } catch (error) {
+        console.error('User role error:', error);
+        userLoaded = true;
+    }
+}
+
+loadCurrentUser();
+
+
 // searching accounts
 document.getElementById('search_button').addEventListener('click', search_account);
 
 async function search_account() {
+
+    if (!userLoaded) {
+        await loadCurrentUser();
+    }
+
     const search = document.getElementById('search_input').value.trim();
 
     if (!search) {
-        alert('Please enter a meter number.');
+        alert('Please enter a meter number or name.');
         return;
     }
 
@@ -34,38 +65,33 @@ async function search_account() {
 }
 
 
-// function for displaying account
+//==================================
+// DISPLAYS THE ACCOUNT FOR THE USER
+//==================================
 function display_account(accounts) {
     const table = document.getElementById('account_table');
+    const selectedAccount = document.getElementById('selected_account');
+    const payButton = document.getElementById('pay');
+
     table.innerHTML = '';
+    selectedAccount.innerHTML = '<p>No account selected.</p>';
+    payButton.disabled = true;
 
     if (accounts.length === 0) {
         const message = document.createElement('p');
-        message.textContent = 'No account yet';
+        message.textContent = 'No account found';
         table.appendChild(message);
         return;
     }
 
-    // Safely display text that contains <br> separators
-    function appendHistoryText(container, value) {
-        const parts = String(value || '').split(/<br\s*\/?>/gi);
-
-        parts.forEach((part, index) => {
-            const text = document.createTextNode(part);
-            container.appendChild(text);
-
-            if (index < parts.length - 1) {
-                container.appendChild(document.createElement('br'));
-            }
-        });
-    }
-
     accounts.forEach(account => {
+
+        const accountDiv = document.createElement('div');
 
         function addParagraph(label, value) {
             const p = document.createElement('p');
             p.textContent = `${label}${value ?? ''}`;
-            table.appendChild(p);
+            accountDiv.appendChild(p);
         }
 
         addParagraph('Meter No: ', account.meter_id);
@@ -79,69 +105,121 @@ function display_account(accounts) {
         );
         addParagraph('Balance: ', account.balance);
 
-        table.appendChild(document.createElement('br'));
+        const selectButton = document.createElement('button');
+        selectButton.textContent = 'Select Account';
+        selectButton.type = 'button';
 
-        // Payments
-        const paymentsHeading = document.createElement('h4');
-        paymentsHeading.textContent = 'Payments';
-        table.appendChild(paymentsHeading);
+        selectButton.addEventListener('click', () => {
+            selectedAccount.innerHTML = '';
 
-        const payments = document.createElement('p');
-        appendHistoryText(payments, account.payments || 'No payment history');
-        table.appendChild(payments);
+            const meter = document.createElement('p');
+            meter.textContent = `Meter No: ${account.meter_id}`;
 
-        // Bills
-        const billsHeading = document.createElement('h4');
-        billsHeading.textContent = 'Bills';
-        table.appendChild(billsHeading);
+            const name = document.createElement('p');
+            name.textContent =
+                `Name: ${account.first_name ?? ''} ${account.last_name ?? ''}`;
 
-        const bills = document.createElement('p');
-        appendHistoryText(bills, account.bills || 'No bills recorded');
-        table.appendChild(bills);
+            const address = document.createElement('p');
+            address.textContent =
+                `Address: ${account.barangay ?? ''} (${account.sitio ?? ''})`;
+
+            const balance = document.createElement('p');
+            balance.textContent = `Balance: ${account.balance}`;
+
+            selectedAccount.appendChild(meter);
+            selectedAccount.appendChild(name);
+            selectedAccount.appendChild(address);
+            selectedAccount.appendChild(balance);
+
+            payButton.disabled = false;
+            payButton.dataset.meterId = account.meter_id;
+        });
+
+        accountDiv.appendChild(selectButton);
+
+        if (currentUserRole === 'admin') {
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit Account';
+            editButton.type = 'button';
+            editButton.addEventListener('click', () => {
+                window.location.href =
+                    `edit_client.html?meter_id=${account.meter_id}`;
+            });
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete Account';
+            deleteButton.type = 'button';
+            deleteButton.addEventListener('click', async () => {
+            
+            // CONFIRMS THE DELETION OF AN ACCOUNT
+            const confirmed = confirm(
+                `Are you sure you want to delete account ${account.meter_id}?`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/api/view-account/delete/${account.meter_id}`,
+                    {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message || 'Failed to delete account'
+                    );
+                }
+
+                alert('Account deleted successfully.');
+
+                search_account();
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message ||
+                    'Failed to delete account.'
+                );
+            }
+        });
+
+            accountDiv.appendChild(editButton);
+            accountDiv.appendChild(deleteButton);
+        }
+
+        table.appendChild(accountDiv);
+        table.appendChild(document.createElement('hr'));
     });
 }
 
 
-// payment
+//=================
+// PAYMENT
+//=================
 document.getElementById('pay').addEventListener('click', pay);
 
 async function pay() {
 
-    const search =
-        document.getElementById('search_input').value.trim();
+    const meterId = document.getElementById('pay').dataset.meterId;
 
-    if (!search) {
-        alert('Please search for an account first.');
+    if (!meterId) {
+        alert('Please select an account first.');
         return;
     }
 
     try {
 
-        // Find account
-        const response = await fetch(
-            `/api/view-account/search?q=${encodeURIComponent(search)}`,
-            {
-                credentials: 'include'
-            }
-        );
-
-        const accountData = await response.json();
-
-        if (
-            !response.ok ||
-            !accountData.success ||
-            !Array.isArray(accountData.accounts) ||
-            accountData.accounts.length === 0
-        ) {
-            alert('Account not found.');
-            return;
-        }
-
-        const account = accountData.accounts[0];
-
-        // Automatically fill meter number
-        document.getElementById('payment_meter_id').value =
-            account.meter_id;
+        document.getElementById('payment_meter_id').value = meterId;
 
 
         // ==========================================
@@ -149,7 +227,7 @@ async function pay() {
         // ==========================================
 
         const billResponse = await fetch(
-            `/api/bills/account/${account.meter_id}`,
+            `/api/bills/account/${meterId}`,
             {
                 credentials: 'include'
             }
@@ -203,7 +281,7 @@ async function pay() {
         // ==========================================
 
         const paymentResponse = await fetch(
-            `/api/payments/print?meter_id=${account.meter_id}`,
+            `/api/payments/print?meter_id=${meterId}`,
             {
                 credentials: 'include'
             }

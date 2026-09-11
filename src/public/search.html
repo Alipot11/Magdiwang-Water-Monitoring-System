@@ -8,23 +8,20 @@
 </head>
 <body>
     <div>
-        <input type="text" id="search_input" placeholder="Search meter number...">
+        <input type="text" id="search_input" placeholder="Search meter number or name">
         <button id="search_button">Search</button>
     </div>
-    <h3>Account</h3>
-    <div id="account_table">
-        <p>Meter No:</p>
-        <p>Name:</p>
-        <p></p>
-        <p>Address:</p>
-        <p></p>
-        <p>Balance:</p>
-        <br>
-        <p>Payments</p>
-        <p>Bills</p>
+
+    <h3>Search Results</h3>
+
+    <div id="account_table"></div>
+
+    <h3>Selected Account</h3>
+    <div id="selected_account">
+        <p>No account selected.</p>
     </div>
 
-    <button id="pay">Pay</button>
+    <button id="pay" type="button" disabled>Pay</button>
 
     <form action="" method="post" id="payment_form">
         <h3>Payment</h3>

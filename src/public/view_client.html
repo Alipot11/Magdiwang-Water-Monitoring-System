@@ -4,22 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/js/view_client.js" defer></script>
-    <title>View Client</title>
+    <title>Audit Logs</title>
 </head>
 <body>
-    <table>
-    <thead>
-        <tr>
-            <th>meter/account</th>
-            <th>first name</th>
-            <th>last name</th>
-            <th>barangay</th>
-            <th>sitio</th>
-        </tr>
-    </thead>
 
-    <tbody id="account_table">
-    </tbody>
-</table>
+    <h1>Audit Logs</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date/Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Table</th>
+                <th>Meter</th>
+                <th>Owner</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+
+        <tbody id="audit_table">
+        </tbody>
+    </table>
+
+    <div>
+        <button id="previous_button" type="button">Previous</button>
+        <span id="page_info">Page 1</span>
+        <button id="next_button" type="button">Next</button>
+    </div>
+
 </body>
 </html>
