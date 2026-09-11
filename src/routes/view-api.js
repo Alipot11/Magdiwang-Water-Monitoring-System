@@ -30,38 +30,6 @@ const publicAccountLimiter = rateLimit({
 });
 
 
-// Staff: get accounts
-router.get('/', require_staff, (req, res) => {
-
-    const sql = `
-        SELECT
-            meter_id,
-            first_name,
-            last_name,
-            barangay,
-            sitio
-        FROM customers
-    `;
-
-    db.query(sql, (err, results) => {
-
-        if (err) {
-            console.error('Retrieve accounts error:', err);
-
-            return res.status(500).json({
-                success: false,
-                message: 'Failed to retrieve data'
-            });
-        }
-
-        res.json({
-            success: true,
-            accounts: results
-        });
-    });
-});
-
-
 // Staff: search account
 router.get('/search', require_staff, (req, res) => {
 
@@ -78,24 +46,34 @@ router.get('/search', require_staff, (req, res) => {
         SELECT *
         FROM client_history
         WHERE meter_id = ?
+           OR first_name LIKE ?
+           OR last_name LIKE ?
+           OR CONCAT(first_name, ' ', last_name) LIKE ?
+        ORDER BY first_name, last_name, meter_id
     `;
 
-    db.query(sql, [search], (err, results) => {
+    const nameSearch = `%${search}%`;
 
-        if (err) {
-            console.error('Search account error:', err);
+    db.query(
+        sql,
+        [search, nameSearch, nameSearch, nameSearch],
+        (err, results) => {
 
-            return res.status(500).json({
-                success: false,
-                message: 'Search failed'
+            if (err) {
+                console.error('Search account error:', err);
+
+                return res.status(500).json({
+                    success: false,
+                    message: 'Search failed'
+                });
+            }
+
+            res.json({
+                success: true,
+                accounts: results
             });
         }
-
-        res.json({
-            success: true,
-            accounts: results
-        });
-    });
+    );
 });
 
 
@@ -407,6 +385,77 @@ router.delete('/delete/:meter_id', require_admin, async (req, res) => {
         if (connection) {
             connection.release();
         }
+    }
+});
+
+
+// STAFF AUDIT LOG 
+router.get('/audit-logs', require_admin, async (req, res) => {
+    const page = Number(req.query.page || 1);
+    const limit = Number(req.query.limit || 50);
+
+    if (!Number.isInteger(page) || page < 1) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid page'
+        });
+    }
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid limit'
+        });
+    }
+
+    const offset = (page - 1) * limit;
+
+    try {
+        const [logs] = await db.promise().query(
+            `SELECT
+                a.audit_id,
+                a.user_id,
+                u.username,
+                u.full_name,
+                a.meter_id,
+                a.owner_first_name,
+                a.owner_last_name,
+                a.action,
+                a.table_name,
+                a.record_id,
+                a.description,
+                a.created_at
+            FROM audit_logs a
+            INNER JOIN admin_users u ON a.user_id = u.user_id
+            ORDER BY a.created_at DESC, a.audit_id DESC
+            LIMIT ? OFFSET ?`,
+            [limit, offset]
+        );
+
+        const [[countResult]] = await db.promise().query(
+            `SELECT COUNT(*) AS total
+             FROM audit_logs`
+        );
+
+        res.set('Cache-Control', 'no-store');
+
+        return res.status(200).json({
+            success: true,
+            logs,
+            pagination: {
+                page,
+                limit,
+                total: Number(countResult.total),
+                totalPages: Math.ceil(Number(countResult.total) / limit)
+            }
+        });
+    } catch (err) {
+        console.error('Audit log error:', err);
+
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve audit logs'
+        });
     }
 });
 
