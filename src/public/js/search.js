@@ -149,10 +149,49 @@ function display_account(accounts) {
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete Account';
             deleteButton.type = 'button';
-            deleteButton.addEventListener('click', () => {
-                window.location.href =
-                    `delete_client.html?meter_id=${account.meter_id}`;
-            });
+            deleteButton.addEventListener('click', async () => {
+            
+            // CONFIRMS THE DELETION OF AN ACCOUNT
+            const confirmed = confirm(
+                `Are you sure you want to delete account ${account.meter_id}?`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/api/view-account/delete/${account.meter_id}`,
+                    {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(
+                        result.message || 'Failed to delete account'
+                    );
+                }
+
+                alert('Account deleted successfully.');
+
+                search_account();
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    error.message ||
+                    'Failed to delete account.'
+                );
+            }
+        });
 
             accountDiv.appendChild(editButton);
             accountDiv.appendChild(deleteButton);

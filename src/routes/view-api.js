@@ -77,6 +77,50 @@ router.get('/search', require_staff, (req, res) => {
 });
 
 
+// GETS THE ACCOUNT TO BE EDITED
+router.get('/edit/:meter_id', require_admin, (req, res) => {
+
+    const meterId = req.params.meter_id;
+
+    if (!/^\d+$/.test(meterId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid meter ID'
+        });
+    }
+
+    const sql = `
+        SELECT meter_id, first_name, last_name, barangay, sitio
+        FROM customers
+        WHERE meter_id = ?
+    `;
+
+    db.query(sql, [meterId], (err, results) => {
+
+        if (err) {
+            console.error('Get account for edit error:', err);
+
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to load account'
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Account not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            account: results[0]
+        });
+    });
+});
+
+
 // EDIT CLIENT INFORMATIONS
 router.put('/edit/:meter_id', require_admin, async (req, res) => {
     const meterId = req.params.meter_id;
