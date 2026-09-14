@@ -35,7 +35,6 @@ bill_form.addEventListener('submit', async (event) => {
         window.location.href = "search.html"
 
     }   catch (error) {
-        console.error(error);
         alert('Bill not posted')
     }
 });

@@ -1,5 +1,5 @@
 let currentPage = 1;
-const limit = 50;
+const limit = 10;
 
 // DISPLAYS THE AUDIT LOGS FROM THE DATABASE
 async function loadAuditLogs() {
@@ -53,7 +53,7 @@ async function loadAuditLogs() {
             currentPage >= data.pagination.totalPages;
 
     } catch (error) {
-        console.error('Audit log error:', error);
+        alert('Failed to load audit logs')
     }
 }
 

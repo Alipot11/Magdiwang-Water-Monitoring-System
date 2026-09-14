@@ -3,6 +3,7 @@ const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const db = require('../../database.js');
 const { require_admin, require_staff } = require('../middleware/auth.js');
+const {require_csrf} = require('../middleware/csrf.js')
 
 
 const VALID_BARANGAYS = new Set([
@@ -20,7 +21,7 @@ const VALID_BARANGAYS = new Set([
 
 const publicAccountLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 30,                  // maximum 30 lookups
+    max: 15,                  // maximum 15 lookups
     standardHeaders: true,
     legacyHeaders: false,
     message: {
@@ -122,7 +123,7 @@ router.get('/edit/:meter_id', require_admin, (req, res) => {
 
 
 // EDIT CLIENT INFORMATIONS
-router.put('/edit/:meter_id', require_admin, async (req, res) => {
+router.put('/edit/:meter_id', require_admin, require_csrf, async (req, res) => {
     const meterId = req.params.meter_id;
 
     if (!/^\d+$/.test(meterId)) {
@@ -304,7 +305,7 @@ router.put('/edit/:meter_id', require_admin, async (req, res) => {
 
 
 // DELETE A CLIENT
-router.delete('/delete/:meter_id', require_admin, async (req, res) => {
+router.delete('/delete/:meter_id', require_admin, require_csrf, async (req, res) => {
     const meterId = req.params.meter_id;
 
     if (!/^\d+$/.test(meterId)) {
