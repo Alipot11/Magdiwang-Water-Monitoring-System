@@ -160,12 +160,30 @@ function display_account(accounts) {
             }
 
             try {
+                const tokenResponse = await fetch(
+                    '/api/admin/csrf-token',
+                    {
+                        method: 'GET',
+                        credentials: 'include'
+                    }
+                )
+
+                const tokenResult = await tokenResponse.json();
+
+                if(!tokenResponse.ok || !tokenResult.success) {
+                    throw new Error(
+                        tokenResult.message || "Failed to obtain CSRF token"
+                    );     
+                }
 
                 const response = await fetch(
                     `/api/view-account/delete/${account.meter_id}`,
                     {
                         method: 'DELETE',
-                        credentials: 'include'
+                        credentials: 'include',
+                        headers: {
+                            'X-CSRF-Token': tokenResult.csrfToken
+                        }
                     }
                 );
 
@@ -389,13 +407,30 @@ payment_form.addEventListener('submit', async (event) => {
     };
 
     try {
+        const tokenResponse = await fetch(
+            '/api/admin/csrf-token',
+        {
+            method: 'GET',
+            credentials: 'include'
+        }
+    );
+
+    const tokenResult = await tokenResponse.json();
+
+    if(!tokenResponse.ok || !tokenResult.success) {
+        throw new Error(
+            tokenResult.message || "Failed to obtain CSRF token"
+        );
+        
+    }
 
         const response = await fetch(
             '/api/payments',
             {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': tokenResult.csrfToken
                 },
                 credentials: 'include',
                 body: JSON.stringify(data)
@@ -404,7 +439,7 @@ payment_form.addEventListener('submit', async (event) => {
 
         const result = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
             throw new Error(
                 result.message || 'Payment failed'
             );

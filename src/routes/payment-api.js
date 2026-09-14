@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../database.js');
 const { require_payment_access } = require('../middleware/auth.js');
+const {require_csrf} = require('../middleware/csrf.js');
 
-router.post('/', require_payment_access, async (req, res) => {
+router.post('/', require_payment_access, require_csrf, async (req, res) => {
 
     const {
         bill_id,

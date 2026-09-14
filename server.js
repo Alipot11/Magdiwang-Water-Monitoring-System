@@ -1,21 +1,21 @@
+
 const express = require('express');
 const app = express();
 const helmet = require('helmet');
-const path = require('path')
+const path = require('path');
 const session = require('express-session');
 const MySQLSessionStore = require('./src/session-store.js');
+const db = require('./database.js');
 
-// api routes
 const view_api = require('./src/routes/view-api.js');
 const bills_api = require('./src/routes/bill-api.js');
 const registration_api = require('./src/routes/registration-api.js');
-const payments_api = require('./src/routes/payment-api.js')
-const admin_login = require('./src/routes/admin-api.js')
-
+const payments_api = require('./src/routes/payment-api.js');
+const admin_login = require('./src/routes/admin-api.js');
 
 const sessionStore = new MySQLSessionStore();
 
-setInterval(() => {
+const cleanupInterval = setInterval(() => {
     sessionStore.cleanupExpired();
 }, 60 * 60 * 1000);
 
@@ -46,29 +46,18 @@ app.use(session({
     }
 }));
 
-app.use(express.json({limit: "100kb"}));
+app.use(express.json({ limit: '100kb' }));
+
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 
-
-// ROUTES
-
-// route for admin authorization
 app.use('/api/admin', admin_login);
-
-// route api for client accounts
 app.use('/api/view-account', view_api);
-
-// route api for client bills
 app.use('/api/bills', bills_api);
+app.use('/api/register', registration_api);
+app.use('/api/payments', payments_api);
 
-// route api for registering client
-app.use('/api/register', registration_api)
-
-// route api for payments
-app.use('/api/payments', payments_api)
-
-// server
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'user.html'));
 });
@@ -77,6 +66,31 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'admin-login.html'));
 });
 
-app.listen(3000,() => {
-    console.log(`server is listening at port 3000`);
+const server = app.listen(3000, () => {
+    console.log('server is listening at port 3000');
 });
+
+let shuttingDown = false;
+
+function shutdown(signal) {
+    if (shuttingDown) return;
+
+    shuttingDown = true;
+    console.log(`${signal} received. Shutting down...`);
+
+    clearInterval(cleanupInterval);
+
+    server.close(() => {
+        db.end((error) => {
+            if (error) {
+                console.error('Failed to close database pool:', error);
+                process.exitCode = 1;
+            }
+
+            process.exit();
+        });
+    });
+}
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

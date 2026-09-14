@@ -3,6 +3,10 @@ const router = express.Router();
 const rateLimit = require('express-rate-limit');
 const db = require('../../database.js');
 const bcrypt = require('bcryptjs');
+const {
+    csrf_token,
+    require_csrf
+} = require('../middleware/csrf.js');
 const { require_login } = require('../middleware/auth.js');
 
 
@@ -182,11 +186,14 @@ router.get('/me', require_login, (req, res) => {
 });
 
 
+router.get('/csrf-token', require_login, csrf_token);
+
+
 // --------------------------------
 // LOGOUT
 // --------------------------------
 
-router.post('/logout', require_login, (req, res) => {
+router.post('/logout', require_login, require_csrf, (req, res) => {
 
     req.session.destroy((err) => {
 
