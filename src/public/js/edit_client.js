@@ -32,14 +32,12 @@ async function loadAccount() {
         document.getElementById('sitio').value = data.account.sitio;
 
     } catch (error) {
-        console.error('Load account error:', error);
         alert('Failed to load account.');
         window.location.href = '/search.html';
     }
 }
 
 form.addEventListener('submit', async (event) => {
-
     event.preventDefault();
 
     const firstName = document.getElementById('first_name').value.trim();
@@ -48,19 +46,39 @@ form.addEventListener('submit', async (event) => {
     const sitio = document.getElementById('sitio').value.trim();
 
     try {
-        const response = await fetch(`/api/view-account/edit/${meterId}`, {
-            method: 'PUT',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                first_name: firstName,
-                last_name: lastName,
-                barangay: barangay,
-                sitio: sitio
-            })
-        });
+        const tokenResponse = await fetch(
+            '/api/admin/csrf-token',
+            {
+                method: 'GET',
+                credentials: 'include'
+            }
+        );
+
+        const tokenResult = await tokenResponse.json();
+
+        if (!tokenResponse.ok || !tokenResult.success) {
+            throw new Error(
+                tokenResult.message || 'Failed to obtain CSRF token'
+            );
+        }
+
+        const response = await fetch(
+            `/api/view-account/edit/${meterId}`,
+            {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': tokenResult.csrfToken
+                },
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name: lastName,
+                    barangay: barangay,
+                    sitio: sitio
+                })
+            }
+        );
 
         const data = await response.json();
 
@@ -73,13 +91,9 @@ form.addEventListener('submit', async (event) => {
         window.location.href = '/search.html';
 
     } catch (error) {
-        console.error('Update account error:', error);
-        alert('Failed to update account.');
+        alert(error.message || 'Failed to update account.');
     }
 });
 
-cancelButton.addEventListener('click', () => {
-    window.location.href = '/search.html';
-});
 
 loadAccount();

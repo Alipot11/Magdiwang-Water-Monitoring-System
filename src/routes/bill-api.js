@@ -2,11 +2,11 @@ const express = require ('express');
 const router = express.Router();
 const db = require('../../database.js');
 const {require_admin, require_staff} = require('../middleware/auth.js')
+const {require_csrf} = require('../middleware/csrf.js')
 
 
 // Post a bill
-// Post a bill
-router.post('/', require_admin, async (req, res) => {
+router.post('/', require_admin, require_csrf, async (req, res) => {
 
     const {
         meter_id,

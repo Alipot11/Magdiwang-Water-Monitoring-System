@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../database.js');
 const { require_admin } = require('../middleware/auth.js');
+const {require_csrf} = require('../middleware/csrf.js')
 
 
 const VALID_BARANGAYS = new Set([
@@ -17,7 +18,7 @@ const VALID_BARANGAYS = new Set([
 ]);
 
 
-router.post('/', require_admin, async (req, res) => {
+router.post('/', require_admin, require_csrf, async (req, res) => {
 
     let {
         meter_id,
