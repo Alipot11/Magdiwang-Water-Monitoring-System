@@ -27,7 +27,7 @@ document.getElementById('login_form').addEventListener('submit', async (e) => {
 
         if (data.user.role === 'admin') {
             window.location.href = 'admin.html';
-        } else if (data.user.role === 'cashier') {
+        } else if (data.user.role === 'treasurer') {
             window.location.href = 'cashier.html';
         }
     } catch (error) {
