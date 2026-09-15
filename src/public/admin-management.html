@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="/js/admin-management.js" defer></script>
+    <title>Admin Management</title>
+</head>
+<body>
+    <h1>Admin Management</h1>
+
+    <section>
+        <h2>Create Account</h2>
+
+        <form id="create_user_form">
+            <label for="new_username">Username:</label>
+            <input type="text" id="new_username" required>
+
+            <br>
+
+            <label for="new_full_name">Full Name:</label>
+            <input type="text" id="new_full_name" required>
+
+            <br>
+
+            <label for="new_password">Password:</label>
+            <input type="password" id="new_password" required>
+            <button type="button" id="toggle_new_password">Show</button>
+
+            <br>
+
+            <label for="new_role">Role:</label>
+            <select id="new_role" required>
+                <option value="admin">Admin</option>
+                <option value="treasurer">Treasurer</option>
+            </select>
+
+            <br>
+
+            <button type="submit">Create Account</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <section>
+        <h2>Existing Accounts</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="users_table_body"></tbody>
+        </table>
+    </section>
+
+    <p id="message"></p>
+
+    <hr>
+
+    <section>
+        <h2>Edit Account</h2>
+
+        <form id="edit_user_form">
+            <input type="hidden" id="edit_user_id">
+
+            <label for="edit_username">Username:</label>
+            <input type="text" id="edit_username" required>
+
+            <br>
+
+            <label for="edit_full_name">Full Name:</label>
+            <input type="text" id="edit_full_name" required>
+
+            <br>
+
+            <label for="edit_password">New Password:</label>
+            <input type="password" id="edit_password">
+            <button type="button" id="toggle_edit_password">Show</button>
+
+            <br>
+
+            <label for="edit_role">Role:</label>
+            <select id="edit_role" required>
+                <option value="admin">Admin</option>
+                <option value="treasurer">Treasurer</option>
+            </select>
+
+            <br>
+
+            <button type="submit">Save Changes</button>
+            <button type="button" id="cancel_edit">Cancel</button>
+        </form>
+    </section>
+
+</body>
+</html>
