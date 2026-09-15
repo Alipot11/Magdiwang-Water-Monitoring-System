@@ -10,7 +10,7 @@
     "qs": "6.16.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --detectOpenHandles",
     "dev": "nodemon server.js"
   },
   "dependencies": {
@@ -23,6 +23,8 @@
     "mysql2": "^3.24.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^30.5.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
   }
 }
