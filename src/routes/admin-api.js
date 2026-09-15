@@ -190,7 +190,6 @@ router.get('/csrf-token', require_login, csrf_token);
 // ================================
 // LOGOUT
 // ================================
-
 router.post('/logout', require_login, require_csrf, (req, res) => {
 
     req.session.destroy((err) => {
@@ -219,7 +218,7 @@ router.post('/logout', require_login, require_csrf, (req, res) => {
 //======================================================
 router.get('/users', require_admin, async (req, res) => {
     try {
-        const [users] = await db.query(`
+        const [users] = await db.promise().query(`
             SELECT
                 user_id,
                 username,
@@ -421,6 +420,41 @@ router.patch('/users/:user_id/deactivate', require_admin, require_csrf, async (r
 
         await connection.beginTransaction();
 
+        //PREVENTS THE LAST ACTIVE ADMIN ACCOUNT TO BE DEACTIVATED
+        const [activeAdmins] = await connection.query(
+            `
+            SELECT COUNT(*) AS total
+            FROM admin_users
+            WHERE role = 'admin' AND is_active = 1
+            `
+        );
+
+        if (
+            activeAdmins[0].total <= 1
+        ) {
+            const [targetUser] = await connection.query(
+                `
+                SELECT role, is_active
+                FROM admin_users
+                WHERE user_id = ?
+                `,
+                [userId]
+            );
+
+            if (
+                targetUser.length > 0 &&
+                targetUser[0].role === 'admin' &&
+                targetUser[0].is_active === 1
+            ) {
+                await connection.rollback();
+
+                return res.status(400).json({
+                    success: false,
+                    message: 'You cannot deactivate the last active admin account.'
+                });
+            }
+        }
+
         const [result] = await connection.query(
             `
             UPDATE admin_users
@@ -566,6 +600,193 @@ router.patch('/users/:user_id/activate', require_admin, require_csrf, async (req
         res.status(500).json({
             success: false,
             message: 'Failed to reactivate user.'
+        });
+    } finally {
+        if (connection) {
+            connection.release();
+        }
+    }
+});
+
+
+//==============================
+// EDIT ADMIN/TREASURER ACCOUNTS
+//==============================
+router.patch('/users/:user_id', require_admin, require_csrf, async (req, res) => {
+    const userId = Number(req.params.user_id);
+    const {
+        username,
+        full_name,
+        role,
+        password
+    } = req.body;
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid user ID.'
+        });
+    }
+
+    if (
+        typeof username !== 'string' ||
+        typeof full_name !== 'string' ||
+        typeof role !== 'string'
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Username, full name, and role are required.'
+        });
+    }
+
+    const cleanUsername = username.trim();
+    const cleanFullName = full_name.trim();
+
+    if (
+        cleanUsername.length < 3 ||
+        cleanUsername.length > 255 ||
+        cleanFullName.length < 2 ||
+        cleanFullName.length > 100 ||
+        /[\u0000-\u001F\u007F]/.test(cleanUsername) ||
+        /[\u0000-\u001F\u007F]/.test(cleanFullName)
+    ) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid account information.'
+        });
+    }
+
+    if (!['admin', 'treasurer'].includes(role)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid role.'
+        });
+    }
+
+    if (password !== undefined && password !== '') {
+        if (
+            typeof password !== 'string' ||
+            password.length < 12 ||
+            !/[A-Z]/.test(password) ||
+            !/[a-z]/.test(password) ||
+            !/[0-9]/.test(password) ||
+            !/[^A-Za-z0-9]/.test(password)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password does not meet the required strength.'
+            });
+        }
+    }
+
+    let connection;
+
+    try {
+        connection = await db.promise().getConnection();
+
+        await connection.beginTransaction();
+
+        const [existingUsers] = await connection.query(
+            `
+            SELECT username, full_name, role
+            FROM admin_users
+            WHERE user_id = ?
+            `,
+            [userId]
+        );
+
+        if (existingUsers.length === 0) {
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: 'User not found.'
+            });
+        }
+
+        let query;
+        let values;
+
+        if (password !== undefined && password !== '') {
+            const passwordHash = await bcrypt.hash(password, 12);
+
+            query = `
+                UPDATE admin_users
+                SET username = ?, full_name = ?, role = ?, password_hash = ?
+                WHERE user_id = ?
+            `;
+
+            values = [
+                cleanUsername,
+                cleanFullName,
+                role,
+                passwordHash,
+                userId
+            ];
+        } else {
+            query = `
+                UPDATE admin_users
+                SET username = ?, full_name = ?, role = ?
+                WHERE user_id = ?
+            `;
+
+            values = [
+                cleanUsername,
+                cleanFullName,
+                role,
+                userId
+            ];
+        }
+
+        await connection.query(query, values);
+
+        await connection.query(
+            `
+            INSERT INTO audit_logs
+                (
+                    user_id,
+                    meter_id,
+                    owner_first_name,
+                    owner_last_name,
+                    action,
+                    table_name,
+                    record_id,
+                    description
+                )
+            VALUES (?, NULL, NULL, NULL, ?, ?, ?, ?)
+            `,
+            [
+                req.session.user.user_id,
+                'UPDATE',
+                'admin_users',
+                userId,
+                `Updated admin account ID: ${userId}`
+            ]
+        );
+
+        await connection.commit();
+
+        res.json({
+            success: true,
+            message: 'User updated successfully.'
+        });
+    } catch (error) {
+        if (connection) {
+            await connection.rollback();
+        }
+
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({
+                success: false,
+                message: 'Username is already in use.'
+            });
+        }
+
+        console.error('Failed to update admin user:', error);
+
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update user.'
         });
     } finally {
         if (connection) {

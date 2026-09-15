@@ -35,3 +35,19 @@ document.getElementById('login_form').addEventListener('submit', async (e) => {
             'Unable to connect to the server.';
     }
 });
+
+
+// LETS YOU SEE THE PASSWORD YOU TYPED
+function setupPasswordToggle(inputId, buttonId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleButton = document.getElementById(buttonId);
+
+    toggleButton.addEventListener('click', () => {
+        const isHidden = passwordInput.type === 'password';
+
+        passwordInput.type = isHidden ? 'text' : 'password';
+        toggleButton.textContent = isHidden ? 'Hide' : 'Show';
+    });
+}
+
+setupPasswordToggle('password', 'toggle_password');
