@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const helmet = require('helmet');
@@ -48,16 +47,18 @@ app.use(session({
 
 app.use(express.json({ limit: '100kb' }));
 
-app.use(express.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 
+
+// ROUTES
 app.use('/api/admin', admin_login);
 app.use('/api/view-account', view_api);
 app.use('/api/bills', bills_api);
 app.use('/api/register', registration_api);
 app.use('/api/payments', payments_api);
 
+
+// SERVING THE FRONTEND
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'user.html'));
 });
@@ -70,6 +71,8 @@ const server = app.listen(3000, () => {
     console.log('server is listening at port 3000');
 });
 
+
+// SERVER GRACEFUL SHUTDOWN
 let shuttingDown = false;
 
 function shutdown(signal) {

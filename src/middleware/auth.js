@@ -39,7 +39,7 @@ function require_staff(req, res, next) {
 
     const role = req.session.user.role;
 
-    if (role !== 'admin' && role !== 'cashier') {
+    if (role !== 'admin' && role !== 'treasurer') {
         return res.status(403).json({
             success: false,
             message: 'Staff access required'
@@ -60,7 +60,7 @@ function require_payment_access(req, res, next) {
 
     const role = req.session.user.role;
 
-    if (role !== 'admin' && role !== 'cashier') {
+    if (role !== 'admin' && role !== 'treasurer') {
         return res.status(403).json({
             success: false,
             message: 'You do not have permission'
