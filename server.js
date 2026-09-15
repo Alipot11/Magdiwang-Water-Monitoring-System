@@ -5,6 +5,9 @@ const path = require('path');
 const session = require('express-session');
 const MySQLSessionStore = require('./src/session-store.js');
 const db = require('./database.js');
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
 
 const view_api = require('./src/routes/view-api.js');
 const bills_api = require('./src/routes/bill-api.js');
@@ -17,6 +20,10 @@ const sessionStore = new MySQLSessionStore();
 const cleanupInterval = setInterval(() => {
     sessionStore.cleanupExpired();
 }, 60 * 60 * 1000);
+
+if (process.env.NODE_ENV === 'test') {
+    clearInterval(cleanupInterval);
+}
 
 app.disable('x-powered-by');
 
@@ -67,14 +74,20 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'admin-login.html'));
 });
 
-const server = app.listen(3000, () => {
-    console.log('server is listening at port 3000');
-});
 
-
-// SERVER GRACEFUL SHUTDOWN
+// SEVER
+let server;
 let shuttingDown = false;
 
+if (require.main === module) {
+    server = app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
+
+// SERVER GRACEFUL SHUTDOWN
 function shutdown(signal) {
     if (shuttingDown) return;
 
@@ -83,7 +96,7 @@ function shutdown(signal) {
 
     clearInterval(cleanupInterval);
 
-    server.close(() => {
+    const finishShutdown = () => {
         db.end((error) => {
             if (error) {
                 console.error('Failed to close database pool:', error);
@@ -92,8 +105,15 @@ function shutdown(signal) {
 
             process.exit();
         });
-    });
+    };
+
+    if (server) {
+        server.close(finishShutdown);
+    } else {
+        finishShutdown();
+    }
 }
+
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
