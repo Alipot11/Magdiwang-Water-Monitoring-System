@@ -77,6 +77,7 @@ app.get('/login', (req, res) => {
 
 // SEVER
 let server;
+let shuttingDown = false;
 
 if (require.main === module) {
     server = app.listen(PORT, () => {
@@ -95,7 +96,7 @@ function shutdown(signal) {
 
     clearInterval(cleanupInterval);
 
-    if (!server) {
+    const finishShutdown = () => {
         db.end((error) => {
             if (error) {
                 console.error('Failed to close database pool:', error);
@@ -104,21 +105,15 @@ function shutdown(signal) {
 
             process.exit();
         });
+    };
 
-        return;
+    if (server) {
+        server.close(finishShutdown);
+    } else {
+        finishShutdown();
     }
-
-    server.close(() => {
-        db.end((error) => {
-            if (error) {
-                console.error('Failed to close database pool:', error);
-                process.exitCode = 1;
-            }
-
-            process.exit();
-        });
-    });
 }
+
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
