@@ -1,0 +1,169 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("/assets/background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#print_receipt {
+    width: 420px;
+    max-width: 100%;
+
+    margin: 2rem auto 1rem;
+    padding: 2rem;
+
+    color: #222;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#print_receipt h3 {
+    margin: 0;
+
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+#print_receipt > p:first-of-type {
+    margin: 0.4rem 0 1.2rem;
+
+    text-align: center;
+
+    color: #666;
+    font-size: 0.85rem;
+}
+
+#print_receipt hr {
+    margin: 1rem 0;
+
+    border: 0;
+    border-top: 1px dashed #bbb;
+}
+
+#print_receipt h4 {
+    margin: 1rem 0 0.7rem;
+
+    color: #555;
+
+    font-size: 0.85rem;
+
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+#print_receipt p {
+    margin: 0.55rem 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 1rem;
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+#print_receipt p span {
+    text-align: right;
+    font-weight: 600;
+}
+
+#no_print {
+    padding: 0.8rem 1.4rem;
+
+    color: white;
+    font: inherit;
+    font-weight: 700;
+
+    background: rgba(0, 120, 255, 0.7);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+#no_print:hover {
+    background: rgba(0, 120, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+#no_print:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
+
+
+/* ================================
+   PRINT
+================================ */
+
+@media print {
+
+    @page {
+        margin: 10mm;
+    }
+
+    body {
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+
+        display: block;
+
+        color: black;
+        background: white;
+    }
+
+    #print_receipt {
+        width: 100%;
+        max-width: none;
+
+        margin: 0;
+        padding: 0;
+
+        color: black;
+
+        background: white;
+
+        border: none;
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+    #no_print {
+        display: none;
+    }
+}

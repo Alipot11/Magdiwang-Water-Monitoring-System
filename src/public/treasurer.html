@@ -1,13 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/js/admin.js" defer></script>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/style/treasurer.css"
+    >
+
+    <script
+        src="/js/admin.js"
+        defer
+    ></script>
+
     <title>Treasurer</title>
 </head>
+
 <body>
-    <a href="search.html">Search & Pay</a>
-    <button id="logout_btn">Logout</button>
+
+    <main class="treasurer-page">
+
+        <section class="treasurer-card">
+
+            <div class="treasurer-header">
+
+                <p class="page-label">
+                    Staff Portal
+                </p>
+
+                <h1>
+                    Treasurer
+                </h1>
+
+                <p class="page-subtitle">
+                    Payment management
+                </p>
+
+            </div>
+
+
+            <div class="treasurer-actions">
+
+                <a
+                    href="search.html"
+                    class="payment-button"
+                >
+                    Search &amp; Pay
+                </a>
+
+                <button
+                    type="button"
+                    id="logout_btn"
+                    class="logout-button"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
 </body>
+
 </html>

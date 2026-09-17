@@ -3,102 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <script src="/js/admin-management.js" defer></script>
+
+    <link rel="stylesheet" href="style/admin-management.css">
+
+    <script src="/js/admin-management.js" defer></script>
+
     <title>Admin Management</title>
 </head>
+
 <body>
-    <h1>Admin Management</h1>
 
-    <section>
-        <h2>Create Account</h2>
+    <main class="management-page">
 
-        <form id="create_user_form">
-            <label for="new_username">Username:</label>
-            <input type="text" id="new_username" required>
+        <header class="management-header">
 
-            <br>
+            <div>
+                <p class="management-label">Staff Portal</p>
 
-            <label for="new_full_name">Full Name:</label>
-            <input type="text" id="new_full_name" required>
+                <h1>Admin Management</h1>
 
-            <br>
+                <p class="management-subtitle">
+                    Create and manage staff accounts
+                </p>
+            </div>
 
-            <label for="new_password">Password:</label>
-            <input type="password" id="new_password" required>
-            <button type="button" id="toggle_new_password">Show</button>
+            <a href="/admin.html" class="back-button">
+                ← Back to Dashboard
+            </a>
 
-            <br>
+        </header>
 
-            <label for="new_role">Role:</label>
-            <select id="new_role" required>
-                <option value="admin">Admin</option>
-                <option value="treasurer">Treasurer</option>
-            </select>
 
-            <br>
+        <!-- CREATE ACCOUNT -->
 
-            <button type="submit">Create Account</button>
-        </form>
-    </section>
+        <section class="management-card">
 
-    <hr>
+            <div class="section-header">
+                <h2>Create Account</h2>
 
-    <section>
-        <h2>Existing Accounts</h2>
+                <p>
+                    Add a new administrator or treasurer account.
+                </p>
+            </div>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Username</th>
-                    <th>Full Name</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="users_table_body"></tbody>
-        </table>
-    </section>
+            <form id="create_user_form">
 
-    <p id="message"></p>
+                <div class="form-grid">
 
-    <hr>
+                    <div class="form-group">
+                        <label for="new_username">
+                            Username
+                        </label>
 
-    <section>
-        <h2>Edit Account</h2>
+                        <input
+                            type="text"
+                            id="new_username"
+                            required
+                        >
+                    </div>
 
-        <form id="edit_user_form">
-            <input type="hidden" id="edit_user_id">
 
-            <label for="edit_username">Username:</label>
-            <input type="text" id="edit_username" required>
+                    <div class="form-group">
+                        <label for="new_full_name">
+                            Full Name
+                        </label>
 
-            <br>
+                        <input
+                            type="text"
+                            id="new_full_name"
+                            required
+                        >
+                    </div>
 
-            <label for="edit_full_name">Full Name:</label>
-            <input type="text" id="edit_full_name" required>
 
-            <br>
+                    <div class="form-group password-group">
+                        <label for="new_password">
+                            Password
+                        </label>
 
-            <label for="edit_password">New Password:</label>
-            <input type="password" id="edit_password">
-            <button type="button" id="toggle_edit_password">Show</button>
+                        <div class="password-wrapper">
 
-            <br>
+                            <input
+                                type="password"
+                                id="new_password"
+                                required
+                            >
 
-            <label for="edit_role">Role:</label>
-            <select id="edit_role" required>
-                <option value="admin">Admin</option>
-                <option value="treasurer">Treasurer</option>
-            </select>
+                            <button
+                                type="button"
+                                id="toggle_new_password"
+                                class="password-toggle"
+                            >
+                                Show
+                            </button>
 
-            <br>
+                        </div>
+                    </div>
 
-            <button type="submit">Save Changes</button>
-            <button type="button" id="cancel_edit">Cancel</button>
-        </form>
-    </section>
+
+                    <div class="form-group">
+                        <label for="new_role">
+                            Role
+                        </label>
+
+                        <select id="new_role" required>
+                            <option value="admin">Admin</option>
+                            <option value="treasurer">Treasurer</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- EXISTING ACCOUNTS -->
+
+        <section class="management-card">
+
+            <div class="section-header">
+                <h2>Existing Accounts</h2>
+
+                <p>
+                    Manage current staff accounts and their access.
+                </p>
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="users_table_body"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- MESSAGE -->
+
+        <p
+            id="message"
+            class="message"
+            aria-live="polite"
+        ></p>
+
+
+        <!-- EDIT ACCOUNT -->
+
+        <section class="management-card">
+
+            <div class="section-header">
+                <h2>Edit Account</h2>
+
+                <p>
+                    Update staff account information.
+                </p>
+            </div>
+
+
+            <form id="edit_user_form">
+
+                <input
+                    type="hidden"
+                    id="edit_user_id"
+                >
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="edit_username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit_username"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="edit_full_name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit_full_name"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group password-group">
+                        <label for="edit_password">
+                            New Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="edit_password"
+                            >
+
+                            <button
+                                type="button"
+                                id="toggle_edit_password"
+                                class="password-toggle"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="edit_role">
+                            Role
+                        </label>
+
+                        <select id="edit_role" required>
+                            <option value="admin">Admin</option>
+                            <option value="treasurer">Treasurer</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <div class="edit-actions">
+
+                    <button
+                        type="submit"
+                        class="submit-button"
+                    >
+                        Save Changes
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancel_edit"
+                        class="cancel-button"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
 
 </body>
 </html>

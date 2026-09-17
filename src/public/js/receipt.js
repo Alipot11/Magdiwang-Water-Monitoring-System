@@ -91,3 +91,8 @@ async function load_receipt() {
 
 // Load receipt automatically when the page opens
 load_receipt();
+
+
+document.getElementById('no_print').addEventListener('click', () => {
+    window.print();
+});

@@ -3,16 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style/admin.css">
+
     <script src="/js/admin.js" defer></script>
-    <title>Admin</title>
+
+    <title>Admin Dashboard</title>
 </head>
+
 <body>
-    <nav class="Nav-bar"></nav>
-    <a href="bill.html">Post Bill</a>
-    <a href="registration.html">Register a Client</a>
-    <a href="search.html">Search & Pay</a>
-    <a href="audit_logs.html">View Audit Logs</a>
-    <a href="admin-management.html">Manage Admin Accounts</a>
-    <button id="logout_btn">Logout</button>
+
+    <main class="admin-page">
+
+        <header class="admin-header">
+            <div>
+                <p class="admin-label">Staff Portal</p>
+                <h1>Magdiwang Water Supply System</h1>
+                <p class="admin-subtitle">Admin Dashboard</p>
+            </div>
+
+            <button
+                id="logout_btn"
+                class="logout-button"
+                type="button"
+            >
+                Logout
+            </button>
+        </header>
+
+        <nav class="nav-bar" aria-label="Admin navigation">
+
+            <a href="bill.html" class="admin-card">
+                <span class="admin-card-icon">₱</span>
+
+                <span class="admin-card-content">
+                    <strong>Post Bill</strong>
+                    <small>Create and post a client's water bill.</small>
+                </span>
+
+                <span class="admin-card-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="registration.html" class="admin-card">
+                <span class="admin-card-icon">+</span>
+
+                <span class="admin-card-content">
+                    <strong>Register a Client</strong>
+                    <small>Add a new client to the system.</small>
+                </span>
+
+                <span class="admin-card-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="search.html" class="admin-card">
+                <span class="admin-card-icon">⌕</span>
+
+                <span class="admin-card-content">
+                    <strong>Search &amp; Pay</strong>
+                    <small>Find client accounts and record payments.</small>
+                </span>
+
+                <span class="admin-card-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="audit_logs.html" class="admin-card">
+                <span class="admin-card-icon">≡</span>
+
+                <span class="admin-card-content">
+                    <strong>View Audit Logs</strong>
+                    <small>Review recorded administrative activities.</small>
+                </span>
+
+                <span class="admin-card-arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="admin-management.html" class="admin-card">
+                <span class="admin-card-icon">⚙</span>
+
+                <span class="admin-card-content">
+                    <strong>Manage Admin Accounts</strong>
+                    <small>Manage staff access and administrator accounts.</small>
+                </span>
+
+                <span class="admin-card-arrow" aria-hidden="true">→</span>
+            </a>
+
+        </nav>
+
+    </main>
+
 </body>
 </html>
