@@ -3,22 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style/admin-login.css">
+    
     <script src="/js/admin-login.js" defer></script>
-    <title>Document</title>
+
+    <title>Staff Login</title>
 </head>
+
 <body>
-    <form id="login_form">
-    <h2>Staff Login</h2>
 
-    <input type="text" id="username" placeholder="Username" required>
+    <main class="login-page">
 
-    <input type="password" id="password" placeholder="Password" required>
+        <h1>Magdiwang Water Supply System</h1>
 
-    <button type="button" id="toggle_password">Show</button>
+        <div class="login-container">
 
-    <button type="submit">Login</button>
+            <form id="login_form">
 
-    <p id="login_message"></p>
-</form>
+                <h2>Staff Login</h2>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <div class="password-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            id="toggle_password"
+                            aria-label="Show password"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Login
+                </button>
+
+                <p id="login_message" role="alert"></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
 </body>
 </html>

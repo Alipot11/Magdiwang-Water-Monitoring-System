@@ -1,0 +1,290 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("/assets/background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* ================================
+   REGISTRATION PAGE
+================================ */
+
+.registration-page {
+    width: 760px;
+    max-width: 100%;
+
+    margin: 2rem auto;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.5rem;
+}
+
+
+/* ================================
+   PAGE HEADER
+================================ */
+
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1rem;
+    padding: 1.5rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.page-label {
+    margin: 0 0 0.3rem;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    opacity: 0.65;
+}
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.page-subtitle {
+    margin: 0.4rem 0 0;
+
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+
+/* ================================
+   BACK BUTTON
+================================ */
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.7rem 1rem;
+
+    color: white;
+    text-decoration: none;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+
+    transition: background 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ================================
+   REGISTRATION FORM
+================================ */
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.5rem;
+    padding: 1.5rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.registration-form > h2 {
+    margin: 0;
+
+    font-size: 1.3rem;
+}
+
+
+/* ================================
+   FORM SECTION
+================================ */
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.form-section h3 {
+    margin: 0;
+
+    font-size: 0.85rem;
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+    opacity: 0.65;
+}
+
+
+/* ================================
+   FORM GRID
+================================ */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(200px, 1fr)
+        );
+
+    gap: 1rem;
+}
+
+
+/* ================================
+   FORM GROUP
+================================ */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    opacity: 0.85;
+}
+
+
+/* ================================
+   INPUTS
+================================ */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0.85rem 1rem;
+
+    color: white;
+    font: inherit;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    outline: none;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    background: rgba(255, 255, 255, 0.16);
+
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+.form-group select option {
+    color: black;
+    background: white;
+}
+
+
+/* ================================
+   SUBMIT BUTTON
+================================ */
+
+.submit-button {
+    width: 100%;
+
+    padding: 0.9rem 1rem;
+
+    color: white;
+    font: inherit;
+    font-weight: 700;
+
+    background: rgba(0, 120, 255, 0.65);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.submit-button:hover {
+    background: rgba(0, 120, 255, 0.85);
+}
+
+
+/* ================================
+   FOCUS
+================================ */
+
+.back-button:focus-visible,
+.submit-button:focus-visible,
+.form-group input:focus-visible,
+.form-group select:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}

@@ -1,0 +1,765 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("/assets/background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* ======================================================
+   SEARCH & PAY PAGE
+====================================================== */
+
+.search-page {
+    width: 760px;
+    max-width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.25rem;
+}
+
+
+/* ======================================================
+   PAGE HEADER
+====================================================== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    padding: 1.25rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: clamp(
+        1.5rem,
+        4vw,
+        2rem
+    );
+}
+
+.page-label {
+    margin: 0 0 0.25rem;
+
+    font-size: 0.7rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+
+    opacity: 0.6;
+}
+
+.page-subtitle {
+    margin: 0.35rem 0 0;
+
+    font-size: 0.9rem;
+
+    opacity: 0.7;
+}
+
+
+/* ======================================================
+   GLASS CARDS
+====================================================== */
+
+.card {
+    padding: 1.25rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+
+/* ======================================================
+   SECTION HEADINGS
+====================================================== */
+
+.section-heading {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.25rem;
+
+    margin-bottom: 1.25rem;
+}
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 1.25rem;
+}
+
+.section-heading p {
+    margin: 0;
+
+    font-size: 0.85rem;
+
+    opacity: 0.65;
+}
+
+.section-label {
+    margin: 0 !important;
+
+    font-size: 0.7rem !important;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+
+    opacity: 0.55 !important;
+}
+
+
+/* ======================================================
+   BACK BUTTON
+====================================================== */
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.65rem 0.9rem;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    border-radius: 8px;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ======================================================
+   SEARCH
+====================================================== */
+
+.search-box {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.5rem;
+}
+
+.search-box label {
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    opacity: 0.8;
+}
+
+.search-controls {
+    display: flex;
+
+    gap: 0.75rem;
+
+    align-items: stretch;
+}
+
+.search-controls input {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* ======================================================
+   FORM
+====================================================== */
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.form-section-heading {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.2rem;
+}
+
+.form-section-heading h3 {
+    margin: 0;
+
+    font-size: 0.95rem;
+}
+
+.form-section-heading p {
+    margin: 0;
+
+    font-size: 0.8rem;
+
+    opacity: 0.6;
+}
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(200px, 1fr)
+        );
+
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.4rem;
+}
+
+.form-group label {
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    opacity: 0.8;
+}
+
+.form-group input,
+.form-group select,
+.search-controls input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 0.85rem 1rem;
+
+    color: white;
+
+    font: inherit;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    border-radius: 10px;
+
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.search-controls input:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.form-group select option {
+    color: black;
+
+    background: white;
+}
+
+
+/* ======================================================
+   MONEY INPUT
+====================================================== */
+
+.money-input {
+    display: flex;
+
+    align-items: center;
+
+    gap: 0.5rem;
+
+    padding-left: 0.9rem;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    border-radius: 10px;
+}
+
+.money-input span {
+    font-weight: 600;
+
+    opacity: 0.7;
+}
+
+.money-input input {
+    border: 0;
+
+    background: transparent;
+
+    padding-left: 0;
+}
+
+.money-input input:focus {
+    background: transparent;
+}
+
+
+/* ======================================================
+   BUTTONS
+====================================================== */
+
+.primary-button,
+.secondary-button,
+.danger-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.65rem 0.85rem;
+
+    color: white;
+
+    font: inherit;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.primary-button {
+    background: rgba(255, 255, 255, 0.16);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.primary-button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.24);
+
+    transform: translateY(-1px);
+}
+
+.primary-button:disabled {
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+.secondary-button {
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.secondary-button:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.danger-button {
+    background: rgba(255, 80, 80, 0.15);
+
+    border: 1px solid rgba(255, 100, 100, 0.25);
+}
+
+.danger-button:hover {
+    background: rgba(255, 80, 80, 0.25);
+}
+
+.submit-button {
+    width: 100%;
+
+    margin-top: 1.25rem;
+
+    padding: 0.9rem;
+}
+
+.pay-button {
+    width: 100%;
+
+    margin-top: 1rem;
+
+    padding: 0.9rem;
+}
+
+
+/* ======================================================
+   ACCOUNT RESULTS
+====================================================== */
+
+.account-results {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.75rem;
+}
+
+.account-result {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1rem;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 12px;
+}
+
+.account-result-info {
+    flex: 1;
+
+    min-width: 220px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.account-result-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 1rem;
+}
+
+.account-result-header > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.2rem;
+}
+
+.account-result-label,
+.account-balance span,
+.account-result-details span {
+    font-size: 0.7rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+    opacity: 0.6;
+}
+
+.account-meter {
+    font-size: 1.2rem;
+}
+
+.account-balance {
+    text-align: right;
+}
+
+.account-balance strong {
+    font-size: 1.1rem;
+}
+
+.account-result-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(150px, 1fr)
+        );
+
+    gap: 0.75rem;
+}
+
+.account-result-details > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.2rem;
+}
+
+.account-result-details strong {
+    font-size: 0.9rem;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   ACCOUNT ACTIONS
+====================================================== */
+
+.account-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.5rem;
+
+    flex-shrink: 0;
+}
+
+
+/* ======================================================
+   SELECTED ACCOUNT
+====================================================== */
+
+.selected-account {
+    min-width: 0;
+}
+
+.selected-account-card {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    padding: 1rem;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 12px;
+}
+
+.selected-account-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 1rem;
+}
+
+.selected-account-header > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.2rem;
+}
+
+.selected-account-label,
+.selected-balance span {
+    font-size: 0.7rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+    opacity: 0.6;
+}
+
+.selected-account-header h3 {
+    margin: 0;
+
+    font-size: 1.1rem;
+}
+
+.selected-balance {
+    text-align: right;
+}
+
+.selected-balance strong {
+    font-size: 1.15rem;
+}
+
+.selected-account-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(150px, 1fr)
+        );
+
+    gap: 0.75rem;
+
+    padding-top: 1rem;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+}
+
+.selected-account-details > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.2rem;
+}
+
+.selected-account-details span {
+    font-size: 0.7rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+    opacity: 0.6;
+}
+
+.selected-account-details strong {
+    font-size: 0.9rem;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   EMPTY STATES
+====================================================== */
+
+.empty-state {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 0.4rem;
+
+    padding: 2rem 1rem;
+
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    border: 1px dashed
+        rgba(255, 255, 255, 0.15);
+
+    border-radius: 12px;
+}
+
+.empty-icon {
+    font-size: 1.8rem;
+
+    opacity: 0.45;
+}
+
+.empty-state h3 {
+    margin: 0;
+
+    font-size: 0.95rem;
+}
+
+.empty-state p {
+    margin: 0;
+
+    max-width: 400px;
+
+    font-size: 0.8rem;
+
+    opacity: 0.6;
+}
+
+
+/* ======================================================
+   PAYMENT SECTION
+====================================================== */
+
+.payment-section hr {
+    width: 100%;
+
+    margin: 1.25rem 0;
+
+    border: 0;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+}
+
+
+/* ======================================================
+   RECEIPT SECTION
+====================================================== */
+
+.receipt-section {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+.receipt-section .section-heading {
+    margin-bottom: 0;
+}
+
+.receipt-section .secondary-button {
+    align-self: flex-start;
+}

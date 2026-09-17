@@ -3,45 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style/bill.css">
     <script src="/js/bill.js" defer></script>
+
     <title>Bill Posting</title>
 </head>
+
 <body>
-    <form action="" method="post" id="bill_form">
-        <h3>Bill</h3>
-        <label for="meter_id">
-            Meter No.: <input type="number" id="meter_id">
-        </label>
-        <br>
-        <label for="current reading">
-            Current Reading: <input type="number" id="curr_reading"> 
-        </label>
-        <br>
-        <label for="previous reading">
-            Previous Reading: <input type="number" id="pre_reading"> 
-        </label>
-        <br>
-        <label for="cubic meter">
-            Total Cubic Meter: <input type="number" id="tcmeter">
-        </label>
-        <br>
-        <label for="amount">
-            Amount: <input type="number" id="amount"> 
-        </label>
-        <br>
-        <label for="surcharge">
-            Surcharge: <input type="number" id="surcharge">
-        </label>
-        <br>
-        <label for="bill amount">
-            Bill Amount: <input type="number" id="bill_amount"> 
-        </label>
-        <br>
-        <label for="due date">
-            Due Date: <input type="date" id="duedate"> 
-        </label>
-        <br><br>
-        <input type="submit">
-    </form>
+
+    <main class="bill-page">
+
+        <header class="page-header">
+            <div>
+                <p class="page-label">Staff Portal</p>
+                <h1>Bill Posting</h1>
+                <p class="page-subtitle">
+                    Create and post a water bill
+                </p>
+            </div>
+
+            <a href="admin.html" class="back-button">
+                ← Dashboard
+            </a>
+        </header>
+
+
+        <form
+            action=""
+            method="post"
+            id="bill_form"
+            class="bill-form"
+        >
+
+            <h2>Bill Information</h2>
+
+
+            <!-- ACCOUNT INFORMATION -->
+
+            <div class="form-section">
+
+                <h3>Account</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="meter_id">
+                            Meter No.
+                        </label>
+
+                        <input
+                            type="number"
+                            id="meter_id"
+                            name="meter_id"
+                            placeholder="Enter meter number"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- METER READING -->
+
+            <div class="form-section">
+
+                <h3>Meter Reading</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="pre_reading">
+                            Previous Reading
+                        </label>
+
+                        <input
+                            type="number"
+                            id="pre_reading"
+                            name="pre_reading"
+                            placeholder="Previous reading"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="curr_reading">
+                            Current Reading
+                        </label>
+
+                        <input
+                            type="number"
+                            id="curr_reading"
+                            name="curr_reading"
+                            placeholder="Current reading"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="tcmeter">
+                            Total Cubic Meter
+                        </label>
+
+                        <input
+                            type="number"
+                            id="tcmeter"
+                            name="tcmeter"
+                            placeholder="Total consumption"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BILL DETAILS -->
+
+            <div class="form-section">
+
+                <h3>Bill Details</h3>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="amount">
+                            Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            id="amount"
+                            name="amount"
+                            placeholder="₱0.00"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="surcharge">
+                            Surcharge
+                        </label>
+
+                        <input
+                            type="number"
+                            id="surcharge"
+                            name="surcharge"
+                            placeholder="₱0.00"
+                            step="0.01"
+                            value="0"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="bill_amount">
+                            Bill Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            id="bill_amount"
+                            name="bill_amount"
+                            placeholder="₱0.00"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="duedate">
+                            Due Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="duedate"
+                            name="duedate"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="submit-button"
+            >
+                Post Bill
+            </button>
+
+        </form>
+
+    </main>
+
 </body>
 </html>

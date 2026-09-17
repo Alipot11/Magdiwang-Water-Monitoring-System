@@ -3,35 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style/audit_logs.css">
+
     <script src="/js/audit_logs.js" defer></script>
+
     <title>Audit Logs</title>
 </head>
+
 <body>
 
-    <h1>Audit Logs</h1>
+    <main class="audit-container">
 
-    <table>
-        <thead>
-            <tr>
-                <th>Date/Time</th>
-                <th>User</th>
-                <th>Action</th>
-                <th>Table</th>
-                <th>Meter</th>
-                <th>Owner</th>
-                <th>Description</th>
-            </tr>
-        </thead>
+        <section class="audit-card">
 
-        <tbody id="audit_table">
-        </tbody>
-    </table>
+           <div class="audit-header">
 
-    <div>
-        <button id="previous_button" type="button">Previous</button>
-        <span id="page_info">Page 1</span>
-        <button id="next_button" type="button">Next</button>
-    </div>
+                <div>
+                    <h1>Audit Logs</h1>
+                    <p>System activity and account history</p>
+                </div>
+
+                <a href="/admin.html" class="back-button">
+                    ← Back to Dashboard
+                </a>
+
+            </div>
+
+            <div class="audit-table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Table</th>
+                            <th>Meter</th>
+                            <th>Owner</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="audit_table">
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="pagination">
+
+                <button
+                    id="previous_button"
+                    type="button"
+                >
+                    Previous
+                </button>
+
+                <span id="page_info">
+                    Page 1
+                </span>
+
+                <button
+                    id="next_button"
+                    type="button"
+                >
+                    Next
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </body>
 </html>

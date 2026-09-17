@@ -1,0 +1,373 @@
+* {
+    box-sizing: border-box;
+}
+
+
+/* ================================
+   BODY
+================================ */
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    color: white;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("/assets/background.webp");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* ================================
+   PAGE
+================================ */
+
+.edit-page {
+    width: 760px;
+    max-width: 100%;
+
+    margin: 2rem auto;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.5rem;
+}
+
+
+/* ================================
+   HEADER
+================================ */
+
+.edit-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 1.5rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2);
+
+    flex-wrap: wrap;
+}
+
+
+.page-label {
+    margin: 0 0 0.3rem;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    opacity: 0.65;
+}
+
+
+.edit-header h1 {
+    margin: 0;
+
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+
+    line-height: 1.2;
+}
+
+
+.page-subtitle {
+    margin: 0.4rem 0 0;
+
+    font-size: 0.9rem;
+
+    opacity: 0.7;
+}
+
+
+/* ================================
+   BACK BUTTON
+================================ */
+
+.back-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0.7rem 1rem;
+
+    color: white;
+    text-decoration: none;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   EDIT CARD
+================================ */
+
+.edit-card {
+    width: 100%;
+
+    padding: 1.5rem;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ================================
+   FORM
+================================ */
+
+#edit_form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.5rem;
+}
+
+
+/* ================================
+   FORM SECTION
+================================ */
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+
+.form-section h2 {
+    margin: 0;
+
+    font-size: 1.25rem;
+}
+
+
+/* ================================
+   FORM GRID
+================================ */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(200px, 1fr)
+        );
+
+    gap: 1rem;
+}
+
+
+/* ================================
+   FORM GROUP
+================================ */
+
+.form-group {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.4rem;
+}
+
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    opacity: 0.85;
+}
+
+
+/* ================================
+   INPUTS
+================================ */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    min-width: 0;
+
+    padding: 0.85rem 1rem;
+
+    color: white;
+    font: inherit;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    outline: none;
+}
+
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    background: rgba(255, 255, 255, 0.16);
+
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+
+.form-group select option {
+    color: black;
+    background: white;
+}
+
+
+/* ================================
+   METER NUMBER
+================================ */
+
+#meter_id {
+    cursor: not-allowed;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    opacity: 0.75;
+}
+
+
+/* ================================
+   ACTIONS
+================================ */
+
+.form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 0.75rem;
+
+    flex-wrap: wrap;
+}
+
+
+.save-button,
+.cancel-button {
+    padding: 0.85rem 1.2rem;
+
+    color: white;
+
+    font: inherit;
+    font-weight: 700;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* ================================
+   SAVE
+================================ */
+
+.save-button {
+    background: rgba(0, 120, 255, 0.65);
+}
+
+
+.save-button:hover {
+    background: rgba(0, 120, 255, 0.85);
+
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   CANCEL
+================================ */
+
+.cancel-button {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+.cancel-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+
+    transform: translateY(-1px);
+}
+
+
+/* ================================
+   FOCUS
+================================ */
+
+.back-button:focus-visible,
+.save-button:focus-visible,
+.cancel-button:focus-visible,
+.form-group input:focus-visible,
+.form-group select:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 3px;
+}
