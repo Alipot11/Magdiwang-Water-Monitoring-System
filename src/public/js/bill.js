@@ -15,26 +15,45 @@ bill_form.addEventListener('submit', async (event) => {
     };
 
     try {
+        const tokenResponse = await fetch(
+            '/api/admin/csrf-token',
+            {
+                method: 'GET',
+                credentials: 'include'
+            }
+        );
+
+        const tokenResult = await tokenResponse.json();
+
+        if (!tokenResponse.ok || !tokenResult.success) {
+            throw new Error(
+                tokenResult.message || 'Failed to obtain CSRF token'
+            );
+        }
+
         const response = await fetch('/api/bills', {
-            method: 'post',
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': tokenResult.csrfToken
             },
             credentials: 'include',
             body: JSON.stringify(data)
         });
+
         const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(result.message);
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Bill not posted');
         }
-        alert('Bill posted')
+
+        alert('Bill posted');
 
         bill_form.reset();
 
-        window.location.href = "search.html"
+        window.location.href = 'search.html';
 
-    }   catch (error) {
-        alert('Bill not posted')
+    } catch (error) {
+        alert(error.message || 'Bill not posted');
     }
 });
